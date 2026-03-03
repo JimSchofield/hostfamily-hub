@@ -8,6 +8,11 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import type { SafeUser } from "@shared/routes";
 
+function getInitial(name: string): string {
+  const n = name.startsWith("The ") ? name.slice(4) : name;
+  return n.charAt(0).toUpperCase();
+}
+
 function UserManagement() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -64,7 +69,7 @@ function UserManagement() {
             {pending.map((user) => (
               <div key={user.id} data-testid={`row-user-${user.id}`} className="flex items-center gap-3 bg-card rounded-xl border border-amber-200/60 dark:border-amber-800/30 p-4">
                 <div className="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm shrink-0">
-                  {user.name.charAt(0).toUpperCase()}
+                  {getInitial(user.name)}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-foreground truncate">{user.name}</p>
@@ -102,7 +107,7 @@ function UserManagement() {
             {others.map((user) => (
               <div key={user.id} data-testid={`row-user-${user.id}`} className="flex items-center gap-3 bg-card rounded-xl border border-border p-3.5">
                 <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0">
-                  {user.name.charAt(0).toUpperCase()}
+                  {getInitial(user.name)}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-foreground truncate">{user.name}</p>

@@ -6,6 +6,11 @@ import { motion } from "framer-motion";
 import { useReplies, useCreateReply, useLikePost } from "@/hooks/use-posts";
 import { useToast } from "@/hooks/use-toast";
 
+function getInitial(name: string): string {
+  const n = name.startsWith("The ") ? name.slice(4) : name;
+  return n.charAt(0).toUpperCase();
+}
+
 const TYPE_CONFIG = {
   story:    { icon: BookOpen,       label: "Story",          color: "text-primary",   bg: "bg-primary/10" },
   picture:  { icon: Camera,         label: "Picture",        color: "text-violet-500", bg: "bg-violet-500/10" },
@@ -39,7 +44,7 @@ function ReplySection({ postId }: { postId: number }) {
             <div key={reply.id} className="bg-muted/50 rounded-lg px-3 py-2.5">
               <div className="flex items-center gap-1.5 mb-1">
                 <div className="w-5 h-5 rounded-full bg-primary/20 text-primary flex items-center justify-center text-[10px] font-bold">
-                  {reply.authorName.charAt(0).toUpperCase()}
+                  {getInitial(reply.authorName)}
                 </div>
                 <span className="text-xs font-bold text-foreground">{reply.authorName}</span>
                 <span className="text-[10px] text-muted-foreground ml-auto">
@@ -166,7 +171,7 @@ export function PostCard({
         <div className="mt-auto flex items-center justify-between pt-3 border-t border-border/40">
           <div className="flex items-center gap-2.5">
             <div className="w-7 h-7 rounded-full bg-secondary flex items-center justify-center text-secondary-foreground font-bold text-xs shrink-0">
-              {post.authorName.charAt(0).toUpperCase()}
+              {getInitial(post.authorName)}
             </div>
             <div>
               <p className="text-xs font-bold text-foreground leading-none" data-testid={`text-author-${post.id}`}>{post.authorName}</p>

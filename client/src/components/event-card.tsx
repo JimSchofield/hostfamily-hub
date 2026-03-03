@@ -6,6 +6,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAttendEvent } from "@/hooks/use-events";
 import { useToast } from "@/hooks/use-toast";
 
+function getInitial(name: string): string {
+  const n = name.startsWith("The ") ? name.slice(4) : name;
+  return n.charAt(0).toUpperCase();
+}
+
 export function EventCard({ event, index = 0 }: { event: EventWithAttendees; index?: number }) {
   const attendEvent = useAttendEvent();
   const { toast } = useToast();
@@ -88,7 +93,7 @@ export function EventCard({ event, index = 0 }: { event: EventWithAttendees; ind
         <div className="mt-auto pt-4 border-t border-border/40 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-full bg-red-100 text-red-700 flex items-center justify-center font-bold text-xs shrink-0">
-              {event.authorName.charAt(0).toUpperCase()}
+              {getInitial(event.authorName)}
             </div>
             <div>
               <p className="text-xs font-bold text-foreground leading-none">{event.authorName}</p>

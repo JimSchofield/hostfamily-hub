@@ -5,6 +5,11 @@ import { useToast } from "@/hooks/use-toast";
 import hcLogo from "@assets/hc-logo_1772557784017.png";
 import usahLogo from "@assets/USAH-Logo_1772557803462.jpg";
 
+function getInitial(name: string): string {
+  const n = name.startsWith("The ") ? name.slice(4) : name;
+  return n.charAt(0).toUpperCase();
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const { data: user } = useAuth();
@@ -63,7 +68,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             {user && (
               <div className="flex items-center gap-1.5 ml-2">
                 <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm shrink-0">
-                  {user.name.charAt(0).toUpperCase()}
+                  {getInitial(user.name)}
                 </div>
                 <span className="text-sm font-medium text-foreground hidden md:block max-w-[100px] truncate" data-testid="text-username">
                   {user.name}
