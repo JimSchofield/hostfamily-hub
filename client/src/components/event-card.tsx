@@ -39,13 +39,17 @@ export function EventCard({ event, index = 0 }: { event: EventWithAttendees; ind
     // keep as-is if parsing fails
   }
 
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const isPast = parseISO(event.eventDate) < today;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.05, ease: "easeOut" }}
       data-testid={`card-event-${event.id}`}
-      className="bg-card rounded-2xl border border-border/50 shadow-sm flex flex-col"
+      className={`bg-card rounded-2xl border border-border/50 shadow-sm flex flex-col transition-opacity ${isPast ? "opacity-50" : ""}`}
     >
       {/* Header bar */}
       <div className="bg-gradient-to-r from-red-500/10 to-rose-400/10 border-b border-red-200/30 px-5 py-3 rounded-t-2xl flex items-center justify-between gap-2">
@@ -53,9 +57,16 @@ export function EventCard({ event, index = 0 }: { event: EventWithAttendees; ind
           <CalendarDays className="w-4 h-4 text-red-500 shrink-0" />
           <span className="text-xs font-bold text-red-600 uppercase tracking-wider">Community Event</span>
         </div>
-        <span className="text-[10px] font-semibold text-muted-foreground">
-          {formatDistanceToNow(new Date(event.createdAt), { addSuffix: true })}
-        </span>
+        <div className="flex items-center gap-2">
+          {isPast && (
+            <span className="text-[10px] font-bold text-muted-foreground bg-muted px-2 py-0.5 rounded-full uppercase tracking-wide">
+              Past
+            </span>
+          )}
+          <span className="text-[10px] font-semibold text-muted-foreground">
+            {formatDistanceToNow(new Date(event.createdAt), { addSuffix: true })}
+          </span>
+        </div>
       </div>
 
       <div className="p-5 flex-1 flex flex-col gap-4">
@@ -111,12 +122,14 @@ export function EventCard({ event, index = 0 }: { event: EventWithAttendees; ind
           <button
             type="button"
             data-testid={`button-attend-${event.id}`}
-            onClick={handleAttend}
-            disabled={attendEvent.isPending}
+            onClick={isPast ? undefined : handleAttend}
+            disabled={attendEvent.isPending || isPast}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
-              attending
-                ? "bg-red-100 text-red-700"
-                : "bg-primary text-primary-foreground shadow-sm shadow-primary/20"
+              isPast
+                ? "bg-muted text-muted-foreground cursor-not-allowed"
+                : attending
+                  ? "bg-red-100 text-red-700"
+                  : "bg-primary text-primary-foreground shadow-sm shadow-primary/20"
             }`}
           >
             {attendEvent.isPending ? (
@@ -124,7 +137,7 @@ export function EventCard({ event, index = 0 }: { event: EventWithAttendees; ind
             ) : attending ? (
               <CheckCircle className="w-3.5 h-3.5" />
             ) : null}
-            {attending ? "You're going!" : "Count me in!"}
+            {isPast ? "Event ended" : attending ? "You're going!" : "Count me in!"}
           </button>
         </div>
 
