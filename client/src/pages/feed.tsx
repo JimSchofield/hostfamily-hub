@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { Layout } from "@/components/layout";
 import { PostCard } from "@/components/post-card";
 import { EventCard } from "@/components/event-card";
+import { SubmitPostDialog } from "@/components/submit-post-dialog";
 import { usePublicPosts } from "@/hooks/use-posts";
 import { useEvents } from "@/hooks/use-events";
-import { Loader2, Sparkles } from "lucide-react";
+import { Loader2, Sparkles, HandHeart } from "lucide-react";
 import { motion } from "framer-motion";
 import type { PostWithLikes } from "@shared/schema";
 import type { EventWithAttendees } from "@shared/schema";
@@ -39,6 +41,8 @@ type FeedItem =
 export default function FeedPage() {
   const { data: posts, isLoading: postsLoading, error: postsError } = usePublicPosts();
   const { data: events, isLoading: eventsLoading, error: eventsError } = useEvents();
+  const [shareOpen, setShareOpen] = useState(false);
+  const [needOpen, setNeedOpen] = useState(false);
 
   const isLoading = postsLoading || eventsLoading;
   const error = postsError || eventsError;
@@ -50,7 +54,7 @@ export default function FeedPage() {
 
   return (
     <Layout>
-      <div className="mb-10 flex flex-col items-center text-center space-y-3 max-w-2xl mx-auto pt-4">
+      <div className="mb-12 flex flex-col items-center text-center space-y-4 max-w-2xl mx-auto pt-4">
         <div className="inline-flex items-center px-6 pb-3 pt-6 rounded-full bg-primary/10 text-primary text-3xl md:text-4xl font-black tracking-wide" style={{ fontFamily: "'Montserrat', sans-serif" }}>
           <HouseH />ost Family&nbsp;<HouseH />ub
         </div>
@@ -60,6 +64,26 @@ export default function FeedPage() {
         <p className="text-base text-muted-foreground">
           From first dinners to lasting friendships, share your stories, events, and milestones as you welcome and love international students.
         </p>
+
+        {/* Action buttons */}
+        <div className="flex items-center gap-3 pt-2">
+          <button
+            data-testid="button-share"
+            onClick={() => setShareOpen(true)}
+            className="flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-xl text-base font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all"
+          >
+            <Sparkles className="w-5 h-5" />
+            Share something!
+          </button>
+          <button
+            data-testid="button-need"
+            onClick={() => setNeedOpen(true)}
+            className="flex items-center gap-2 bg-accent text-accent-foreground px-6 py-3 rounded-xl text-base font-bold shadow-lg shadow-accent/25 hover:shadow-accent/40 hover:-translate-y-0.5 transition-all"
+          >
+            <HandHeart className="w-5 h-5" />
+            Need something?
+          </button>
+        </div>
       </div>
 
       {isLoading && (
@@ -103,6 +127,9 @@ export default function FeedPage() {
           )}
         </div>
       )}
+
+      <SubmitPostDialog mode="share" open={shareOpen} onOpenChange={setShareOpen} />
+      <SubmitPostDialog mode="need" open={needOpen} onOpenChange={setNeedOpen} />
     </Layout>
   );
 }

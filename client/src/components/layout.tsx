@@ -1,7 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Home, LayoutDashboard, LogOut, Sparkles, HandHeart } from "lucide-react";
-import { SubmitPostDialog } from "./submit-post-dialog";
-import { useState } from "react";
+import { Home, LayoutDashboard, LogOut } from "lucide-react";
 import { useAuth, useLogout } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import hcLogo from "@assets/hc-logo_1772557784017.png";
@@ -9,8 +7,6 @@ import usahLogo from "@assets/USAH-Logo_1772557803462.jpg";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
-  const [shareOpen, setShareOpen] = useState(false);
-  const [needOpen, setNeedOpen] = useState(false);
   const { data: user } = useAuth();
   const logout = useLogout();
   const { toast } = useToast();
@@ -64,28 +60,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
               </Link>
             )}
 
-            <div className="w-px h-6 bg-border mx-1" />
-
-            <button
-              data-testid="button-share"
-              onClick={() => setShareOpen(true)}
-              className="flex items-center gap-1.5 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-bold shadow-md shadow-primary/20 transition-all"
-            >
-              <Sparkles className="w-4 h-4" />
-              <span className="hidden sm:block">Share something!</span>
-            </button>
-
-            <button
-              data-testid="button-need"
-              onClick={() => setNeedOpen(true)}
-              className="flex items-center gap-1.5 bg-accent text-accent-foreground px-4 py-2 rounded-lg text-sm font-bold shadow-md shadow-accent/20 transition-all"
-            >
-              <HandHeart className="w-4 h-4" />
-              <span className="hidden sm:block">Need something?</span>
-            </button>
-
             {user && (
-              <div className="flex items-center gap-1.5 ml-1">
+              <div className="flex items-center gap-1.5 ml-2">
                 <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm shrink-0">
                   {user.name.charAt(0).toUpperCase()}
                 </div>
@@ -109,9 +85,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-12">
         {children}
       </main>
-
-      <SubmitPostDialog mode="share" open={shareOpen} onOpenChange={setShareOpen} />
-      <SubmitPostDialog mode="need" open={needOpen} onOpenChange={setNeedOpen} />
     </div>
   );
 }
