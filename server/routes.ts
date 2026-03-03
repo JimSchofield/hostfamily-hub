@@ -170,6 +170,43 @@ export async function registerRoutes(
     }
   });
 
+  // ── Events ────────────────────────────────────────────
+  app.get("/api/events", requireApproved, async (req, res) => {
+    const evts = await storage.getEvents(req.session.userId);
+    res.json(evts);
+  });
+
+  app.post("/api/events", requireApproved, async (req, res) => {
+    try {
+      const body = req.body;
+      const user = await storage.getUserById(req.session.userId!);
+      const event = await storage.createEvent({
+        title: body.title,
+        description: body.description,
+        eventDate: body.eventDate,
+        eventTime: body.eventTime,
+        location: body.location,
+        estimatedCost: body.estimatedCost || "Free",
+        authorName: user?.name ?? "A host family",
+        userId: req.session.userId ?? null,
+      });
+      res.status(201).json(event);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        return res.status(400).json({ message: err.errors[0].message });
+      }
+      throw err;
+    }
+  });
+
+  app.post("/api/events/:id/attend", requireApproved, async (req, res) => {
+    const eventId = parseInt(req.params.id);
+    const userId = req.session.userId!;
+    const user = await storage.getUserById(userId);
+    const result = await storage.toggleAttendance(eventId, userId, user?.name ?? "A host family");
+    res.json(result);
+  });
+
   return httpServer;
 }
 

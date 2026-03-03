@@ -1,27 +1,30 @@
 import { db } from "./db";
-import { users, posts, replies, likes } from "@shared/schema";
-import type { InsertUser, User, InsertPost, Post, InsertReply, Reply, SafeUser, PostWithLikes } from "@shared/schema";
+import { users, posts, replies, likes, events, eventAttendees } from "@shared/schema";
+import type {
+  InsertUser, User, InsertPost, Post, InsertReply, Reply, SafeUser,
+  PostWithLikes, Event, InsertEvent, EventAttendee, EventWithAttendees,
+} from "@shared/schema";
 import { eq, and, inArray, sql } from "drizzle-orm";
 
 export interface IStorage {
-  // Users
   getUserById(id: number): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser & { role?: string; status?: string }): Promise<User>;
   updateUser(id: number, updates: Partial<Pick<User, "status" | "role">>): Promise<User>;
   getAllUsers(): Promise<SafeUser[]>;
 
-  // Posts
   getPublicPosts(userId?: number): Promise<PostWithLikes[]>;
   getPrivatePosts(): Promise<Post[]>;
   createPost(post: InsertPost): Promise<Post>;
 
-  // Replies
   getRepliesByPost(postId: number): Promise<Reply[]>;
   createReply(reply: InsertReply): Promise<Reply>;
 
-  // Likes
   toggleLike(postId: number, userId: number): Promise<{ liked: boolean; count: number }>;
+
+  getEvents(userId?: number): Promise<EventWithAttendees[]>;
+  createEvent(event: InsertEvent): Promise<Event>;
+  toggleAttendance(eventId: number, userId: number, attendeeName: string): Promise<{ attending: boolean; count: number }>;
 }
 
 function toSafeUser(user: User): SafeUser {
@@ -67,14 +70,12 @@ export class DatabaseStorage implements IStorage {
 
     const postIds = rawPosts.map((p) => p.id);
 
-    // Get like counts grouped by post
     const likeCounts = await db
       .select({ postId: likes.postId, count: sql<number>`cast(count(*) as int)` })
       .from(likes)
       .where(inArray(likes.postId, postIds))
       .groupBy(likes.postId);
 
-    // Get this user's likes
     const userLikes = userId
       ? await db
           .select({ postId: likes.postId })
@@ -128,6 +129,55 @@ export class DatabaseStorage implements IStorage {
       .where(eq(likes.postId, postId));
 
     return { liked: !existing, count };
+  }
+
+  async getEvents(userId?: number): Promise<EventWithAttendees[]> {
+    const rawEvents = await db.select().from(events);
+    if (rawEvents.length === 0) return [];
+
+    const eventIds = rawEvents.map((e) => e.id);
+
+    const allAttendees = await db
+      .select()
+      .from(eventAttendees)
+      .where(inArray(eventAttendees.eventId, eventIds));
+
+    return rawEvents.map((ev) => {
+      const evAttendees = allAttendees.filter((a) => a.eventId === ev.id);
+      return {
+        ...ev,
+        attendeeCount: evAttendees.length,
+        isAttending: userId ? evAttendees.some((a) => a.userId === userId) : false,
+        attendees: evAttendees.map((a) => a.attendeeName),
+      };
+    });
+  }
+
+  async createEvent(insertEvent: InsertEvent): Promise<Event> {
+    const [event] = await db.insert(events).values(insertEvent).returning();
+    return event;
+  }
+
+  async toggleAttendance(eventId: number, userId: number, attendeeName: string): Promise<{ attending: boolean; count: number }> {
+    const [existing] = await db
+      .select()
+      .from(eventAttendees)
+      .where(and(eq(eventAttendees.eventId, eventId), eq(eventAttendees.userId, userId)));
+
+    if (existing) {
+      await db
+        .delete(eventAttendees)
+        .where(and(eq(eventAttendees.eventId, eventId), eq(eventAttendees.userId, userId)));
+    } else {
+      await db.insert(eventAttendees).values({ eventId, userId, attendeeName });
+    }
+
+    const [{ count }] = await db
+      .select({ count: sql<number>`cast(count(*) as int)` })
+      .from(eventAttendees)
+      .where(eq(eventAttendees.eventId, eventId));
+
+    return { attending: !existing, count };
   }
 }
 

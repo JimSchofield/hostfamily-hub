@@ -1,6 +1,7 @@
 import { Link, useLocation } from "wouter";
-import { Heart, Home, LayoutDashboard, Plus, LogOut, ChevronDown } from "lucide-react";
+import { Heart, Home, LayoutDashboard, Plus, LogOut, CalendarDays } from "lucide-react";
 import { SubmitPostDialog } from "./submit-post-dialog";
+import { CreateEventDialog } from "./create-event-dialog";
 import { useState } from "react";
 import { useAuth, useLogout } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
@@ -8,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 export function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isEventDialogOpen, setIsEventDialogOpen] = useState(false);
   const { data: user } = useAuth();
   const logout = useLogout();
   const { toast } = useToast();
@@ -65,6 +67,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <div className="w-px h-6 bg-border mx-1" />
 
             <button
+              data-testid="button-create-event"
+              onClick={() => setIsEventDialogOpen(true)}
+              className="flex items-center gap-1.5 bg-emerald-600 text-white px-3 py-2 rounded-lg text-sm font-bold shadow-md shadow-emerald-600/20 transition-all"
+            >
+              <CalendarDays className="w-4 h-4" />
+              <span className="hidden sm:block">Event</span>
+            </button>
+
+            <button
               data-testid="button-share"
               onClick={() => setIsDialogOpen(true)}
               className="flex items-center gap-1.5 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-bold shadow-md shadow-primary/20 transition-all"
@@ -100,6 +111,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </main>
 
       <SubmitPostDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} />
+      <CreateEventDialog open={isEventDialogOpen} onOpenChange={setIsEventDialogOpen} />
     </div>
   );
 }
