@@ -10,18 +10,25 @@ import type { EventWithAttendees } from "@shared/schema";
 
 function HouseH() {
   return (
-    <svg
-      viewBox="0 0 20 22"
-      height="1em"
-      style={{ display: "inline", verticalAlign: "-0.08em" }}
-      fill="currentColor"
-      aria-hidden="true"
-    >
-      <polygon points="10,0 0,10 20,10" />
-      <rect x="0" y="9.5" width="4" height="12.5" />
-      <rect x="16" y="9.5" width="4" height="12.5" />
-      <rect x="4" y="14" width="12" height="3.5" />
-    </svg>
+    <span style={{ position: "relative", display: "inline-block" }}>
+      <svg
+        viewBox="0 0 20 9"
+        aria-hidden="true"
+        fill="currentColor"
+        style={{
+          position: "absolute",
+          bottom: "100%",
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "0.82em",
+          height: "auto",
+          marginBottom: "0.15em",
+        }}
+      >
+        <polygon points="10,0 0,9 20,9" />
+      </svg>
+      H
+    </span>
   );
 }
 
@@ -44,7 +51,7 @@ export default function FeedPage() {
   return (
     <Layout>
       <div className="mb-10 flex flex-col items-center text-center space-y-3 max-w-2xl mx-auto pt-4">
-        <div className="inline-flex items-center px-6 py-3 rounded-full bg-primary/10 text-primary font-bold text-lg tracking-wide">
+        <div className="inline-flex items-center px-6 pb-3 pt-6 rounded-full bg-primary/10 text-primary font-bold text-lg tracking-wide">
           <HouseH />ost Family&nbsp;<HouseH />ub
         </div>
         <h1 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight">
