@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
-import { Heart, Camera, BookOpen, HelpCircle, MessageCircle, ChevronDown, ChevronUp, Send, Loader2 } from "lucide-react";
+import { Heart, Camera, BookOpen, HelpCircle, MessageCircle, Send, Loader2 } from "lucide-react";
 import { type Post, type PostWithLikes } from "@shared/schema";
 import { motion } from "framer-motion";
 import { useReplies, useCreateReply, useLikePost } from "@/hooks/use-posts";
@@ -129,7 +129,6 @@ export function PostCard({
 }) {
   const config = TYPE_CONFIG[post.type as keyof typeof TYPE_CONFIG] ?? TYPE_CONFIG.story;
   const Icon = config.icon;
-  const [repliesOpen, setRepliesOpen] = useState(false);
   const isPublicWithLikes = post.isPublic && "likeCount" in post;
 
   return (
@@ -183,23 +182,10 @@ export function PostCard({
 
           <div className="flex items-center gap-1">
             {isPublicWithLikes && <LikeButton post={post as PostWithLikes} />}
-
-            {showReply && (
-              <button
-                type="button"
-                data-testid={`button-toggle-reply-${post.id}`}
-                onClick={() => setRepliesOpen((v) => !v)}
-                className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors font-medium px-2.5 py-1.5 rounded-lg hover:bg-primary/5"
-              >
-                <MessageCircle className="w-3.5 h-3.5" />
-                Reply
-                {repliesOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-              </button>
-            )}
           </div>
         </div>
 
-        {showReply && repliesOpen && <ReplySection postId={post.id} />}
+        {showReply && <ReplySection postId={post.id} />}
       </div>
     </motion.div>
   );
