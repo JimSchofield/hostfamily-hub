@@ -1,10 +1,12 @@
 import { Link, useLocation } from "wouter";
-import { Heart, Home, LayoutDashboard, Plus, LogOut, CalendarDays } from "lucide-react";
+import { Home, LayoutDashboard, Plus, LogOut, CalendarDays } from "lucide-react";
 import { SubmitPostDialog } from "./submit-post-dialog";
 import { CreateEventDialog } from "./create-event-dialog";
 import { useState } from "react";
 import { useAuth, useLogout } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
+import hcLogo from "@assets/hc-logo_1772557784017.png";
+import usahLogo from "@assets/USAH-Logo_1772557803462.jpg";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
@@ -24,15 +26,22 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen flex flex-col relative">
-      <header className="sticky top-0 z-40 w-full bg-background/90 backdrop-blur border-b border-border">
+      <header className="sticky top-0 z-40 w-full bg-background/95 backdrop-blur border-b border-border">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
-          <Link href="/" className="flex items-center gap-2.5 group shrink-0">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-primary to-primary/70 flex items-center justify-center text-white shadow-md shadow-primary/20 group-hover:scale-105 transition-transform">
-              <Heart className="w-4.5 h-4.5 fill-white" />
-            </div>
-            <span className="font-bold text-lg text-foreground hidden sm:block tracking-tight">
-              HostFamily <span className="text-primary font-light">Hub</span>
-            </span>
+
+          {/* Dual branding logos */}
+          <Link href="/" className="flex items-center gap-3 shrink-0 group" data-testid="link-home">
+            <img
+              src={hcLogo}
+              alt="The Hospitality Center"
+              className="h-8 w-auto object-contain"
+            />
+            <div className="w-px h-7 bg-border" />
+            <img
+              src={usahLogo}
+              alt="USA Homestays"
+              className="h-7 w-auto object-contain"
+            />
           </Link>
 
           <nav className="flex items-center gap-1.5">

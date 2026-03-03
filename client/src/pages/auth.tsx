@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useLogin, useRegister } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
-import { Heart, Loader2, Mail, Lock, User, CheckCircle } from "lucide-react";
+import { Loader2, Mail, Lock, User, CheckCircle } from "lucide-react";
+import hcLogo from "@assets/hc-logo_1772557784017.png";
+import usahLogo from "@assets/USAH-Logo_1772557803462.jpg";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function AuthPage() {
@@ -70,15 +72,19 @@ export default function AuthPage() {
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md"
       >
-        {/* Logo */}
-        <div className="flex flex-col items-center mb-8">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-primary to-primary/70 flex items-center justify-center text-white shadow-lg shadow-primary/20 mb-4">
-            <Heart className="w-7 h-7 fill-white" />
+        {/* Logos */}
+        <div className="flex flex-col items-center mb-8 gap-4">
+          <div className="flex items-center gap-4">
+            <img src={hcLogo} alt="The Hospitality Center" className="h-10 w-auto object-contain" />
+            <div className="w-px h-9 bg-border" />
+            <img src={usahLogo} alt="USA Homestays" className="h-9 w-auto object-contain" />
           </div>
-          <h1 className="text-3xl font-bold text-foreground tracking-tight">HostFamily Hub</h1>
-          <p className="text-muted-foreground mt-2 text-sm text-center">
-            A community for host families supporting international students
-          </p>
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-foreground tracking-tight">HostFamily Hub</h1>
+            <p className="text-muted-foreground mt-1 text-sm">
+              A community for host families supporting international students
+            </p>
+          </div>
         </div>
 
         <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
