@@ -1,7 +1,7 @@
 import { db } from "./db";
-import { users, posts, replies } from "@shared/schema";
-import type { InsertUser, User, InsertPost, Post, InsertReply, Reply, SafeUser } from "@shared/schema";
-import { eq, and } from "drizzle-orm";
+import { users, posts, replies, likes } from "@shared/schema";
+import type { InsertUser, User, InsertPost, Post, InsertReply, Reply, SafeUser, PostWithLikes } from "@shared/schema";
+import { eq, and, inArray, sql } from "drizzle-orm";
 
 export interface IStorage {
   // Users
@@ -12,13 +12,16 @@ export interface IStorage {
   getAllUsers(): Promise<SafeUser[]>;
 
   // Posts
-  getPublicPosts(): Promise<Post[]>;
+  getPublicPosts(userId?: number): Promise<PostWithLikes[]>;
   getPrivatePosts(): Promise<Post[]>;
   createPost(post: InsertPost): Promise<Post>;
 
   // Replies
   getRepliesByPost(postId: number): Promise<Reply[]>;
   createReply(reply: InsertReply): Promise<Reply>;
+
+  // Likes
+  toggleLike(postId: number, userId: number): Promise<{ liked: boolean; count: number }>;
 }
 
 function toSafeUser(user: User): SafeUser {
@@ -58,8 +61,35 @@ export class DatabaseStorage implements IStorage {
     return all.map(toSafeUser);
   }
 
-  async getPublicPosts(): Promise<Post[]> {
-    return await db.select().from(posts).where(eq(posts.isPublic, true));
+  async getPublicPosts(userId?: number): Promise<PostWithLikes[]> {
+    const rawPosts = await db.select().from(posts).where(eq(posts.isPublic, true));
+    if (rawPosts.length === 0) return [];
+
+    const postIds = rawPosts.map((p) => p.id);
+
+    // Get like counts grouped by post
+    const likeCounts = await db
+      .select({ postId: likes.postId, count: sql<number>`cast(count(*) as int)` })
+      .from(likes)
+      .where(inArray(likes.postId, postIds))
+      .groupBy(likes.postId);
+
+    // Get this user's likes
+    const userLikes = userId
+      ? await db
+          .select({ postId: likes.postId })
+          .from(likes)
+          .where(and(inArray(likes.postId, postIds), eq(likes.userId, userId)))
+      : [];
+
+    const countMap = new Map(likeCounts.map((l) => [l.postId, l.count]));
+    const likedSet = new Set(userLikes.map((l) => l.postId));
+
+    return rawPosts.map((p) => ({
+      ...p,
+      likeCount: countMap.get(p.id) ?? 0,
+      likedByMe: likedSet.has(p.id),
+    }));
   }
 
   async getPrivatePosts(): Promise<Post[]> {
@@ -78,6 +108,26 @@ export class DatabaseStorage implements IStorage {
   async createReply(insertReply: InsertReply): Promise<Reply> {
     const [reply] = await db.insert(replies).values(insertReply).returning();
     return reply;
+  }
+
+  async toggleLike(postId: number, userId: number): Promise<{ liked: boolean; count: number }> {
+    const [existing] = await db
+      .select()
+      .from(likes)
+      .where(and(eq(likes.postId, postId), eq(likes.userId, userId)));
+
+    if (existing) {
+      await db.delete(likes).where(and(eq(likes.postId, postId), eq(likes.userId, userId)));
+    } else {
+      await db.insert(likes).values({ postId, userId });
+    }
+
+    const [{ count }] = await db
+      .select({ count: sql<number>`cast(count(*) as int)` })
+      .from(likes)
+      .where(eq(likes.postId, postId));
+
+    return { liked: !existing, count };
   }
 }
 

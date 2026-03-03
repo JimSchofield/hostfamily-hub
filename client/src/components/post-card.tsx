@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { Heart, Camera, BookOpen, HelpCircle, MessageCircle, ChevronDown, ChevronUp, Send, Loader2 } from "lucide-react";
-import { type Post } from "@shared/schema";
+import { type Post, type PostWithLikes } from "@shared/schema";
 import { motion } from "framer-motion";
-import { useReplies, useCreateReply } from "@/hooks/use-posts";
-import { useAuth } from "@/hooks/use-auth";
+import { useReplies, useCreateReply, useLikePost } from "@/hooks/use-posts";
 import { useToast } from "@/hooks/use-toast";
 
 const TYPE_CONFIG = {
@@ -76,18 +75,57 @@ function ReplySection({ postId }: { postId: number }) {
   );
 }
 
+function LikeButton({ post }: { post: PostWithLikes }) {
+  const likePost = useLikePost();
+  const { toast } = useToast();
+  const [optimistic, setOptimistic] = useState<{ liked: boolean; count: number } | null>(null);
+
+  const liked = optimistic?.liked ?? post.likedByMe;
+  const count = optimistic?.count ?? post.likeCount;
+
+  function handleLike() {
+    const next = { liked: !liked, count: liked ? count - 1 : count + 1 };
+    setOptimistic(next);
+    likePost.mutate(post.id, {
+      onError: () => {
+        setOptimistic(null);
+        toast({ title: "Could not like post", variant: "destructive" });
+      },
+      onSuccess: (data) => setOptimistic(data),
+    });
+  }
+
+  return (
+    <button
+      type="button"
+      data-testid={`button-like-${post.id}`}
+      onClick={handleLike}
+      disabled={likePost.isPending}
+      className={`flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-lg transition-colors ${
+        liked
+          ? "text-rose-500 bg-rose-500/10"
+          : "text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10"
+      }`}
+    >
+      <Heart className={`w-3.5 h-3.5 transition-transform ${liked ? "fill-rose-500 scale-110" : ""}`} />
+      <span data-testid={`text-like-count-${post.id}`}>{count > 0 ? count : ""}</span>
+    </button>
+  );
+}
+
 export function PostCard({
   post,
   index = 0,
   showReply = false,
 }: {
-  post: Post;
+  post: Post | PostWithLikes;
   index?: number;
   showReply?: boolean;
 }) {
   const config = TYPE_CONFIG[post.type as keyof typeof TYPE_CONFIG] ?? TYPE_CONFIG.story;
   const Icon = config.icon;
   const [repliesOpen, setRepliesOpen] = useState(false);
+  const isPublicWithLikes = post.isPublic && "likeCount" in post;
 
   return (
     <motion.div
@@ -138,18 +176,22 @@ export function PostCard({
             </div>
           </div>
 
-          {showReply && (
-            <button
-              type="button"
-              data-testid={`button-toggle-reply-${post.id}`}
-              onClick={() => setRepliesOpen((v) => !v)}
-              className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors font-medium"
-            >
-              <MessageCircle className="w-3.5 h-3.5" />
-              Reply
-              {repliesOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-            </button>
-          )}
+          <div className="flex items-center gap-1">
+            {isPublicWithLikes && <LikeButton post={post as PostWithLikes} />}
+
+            {showReply && (
+              <button
+                type="button"
+                data-testid={`button-toggle-reply-${post.id}`}
+                onClick={() => setRepliesOpen((v) => !v)}
+                className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors font-medium px-2.5 py-1.5 rounded-lg hover:bg-primary/5"
+              >
+                <MessageCircle className="w-3.5 h-3.5" />
+                Reply
+                {repliesOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+              </button>
+            )}
+          </div>
         </div>
 
         {showReply && repliesOpen && <ReplySection postId={post.id} />}

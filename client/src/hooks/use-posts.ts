@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { api, type PostResponse, type PostsListResponse, type PostInput, type ReplyResponse } from "@shared/routes";
-import type { Reply } from "@shared/schema";
+import { api, type PostResponse, type PostInput, type ReplyResponse } from "@shared/routes";
+import type { Reply, PostWithLikes } from "@shared/schema";
 import { z } from "zod";
 
 async function apiFetch(url: string, options?: RequestInit) {
@@ -9,12 +9,27 @@ async function apiFetch(url: string, options?: RequestInit) {
 }
 
 export function usePublicPosts() {
-  return useQuery<PostsListResponse>({
+  return useQuery<PostWithLikes[]>({
     queryKey: [api.posts.listPublic.path],
     queryFn: async () => {
       const res = await apiFetch(api.posts.listPublic.path);
       if (!res.ok) throw new Error("Failed to fetch posts");
       return res.json();
+    },
+  });
+}
+
+export function useLikePost() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (postId: number) => {
+      const res = await apiFetch(`/api/posts/${postId}/like`, { method: "POST" });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.message || "Failed to like post");
+      return json as { liked: boolean; count: number };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [api.posts.listPublic.path] });
     },
   });
 }

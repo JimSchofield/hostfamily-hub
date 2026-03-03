@@ -114,7 +114,7 @@ export async function registerRoutes(
 
   // ── Posts ─────────────────────────────────────────────
   app.get(api.posts.listPublic.path, requireApproved, async (req, res) => {
-    const publicPosts = await storage.getPublicPosts();
+    const publicPosts = await storage.getPublicPosts(req.session.userId);
     res.json(publicPosts);
   });
 
@@ -134,6 +134,14 @@ export async function registerRoutes(
       }
       throw err;
     }
+  });
+
+  // ── Likes ─────────────────────────────────────────────
+  app.post("/api/posts/:id/like", requireApproved, async (req, res) => {
+    const postId = parseInt(req.params.id);
+    const userId = req.session.userId!;
+    const result = await storage.toggleLike(postId, userId);
+    res.json(result);
   });
 
   // ── Replies ───────────────────────────────────────────

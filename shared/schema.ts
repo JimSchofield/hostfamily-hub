@@ -32,6 +32,12 @@ export const replies = pgTable("replies", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const likes = pgTable("likes", {
+  id: serial("id").primaryKey(),
+  postId: integer("post_id").notNull(),
+  userId: integer("user_id").notNull(),
+});
+
 export const insertUserSchema = createInsertSchema(users).omit({ id: true, createdAt: true, role: true, status: true });
 export const insertPostSchema = createInsertSchema(posts).omit({ id: true, createdAt: true });
 export const insertReplySchema = createInsertSchema(replies).omit({ id: true, createdAt: true });
@@ -42,5 +48,7 @@ export type Post = typeof posts.$inferSelect;
 export type InsertPost = z.infer<typeof insertPostSchema>;
 export type Reply = typeof replies.$inferSelect;
 export type InsertReply = z.infer<typeof insertReplySchema>;
+export type Like = typeof likes.$inferSelect;
+export type PostWithLikes = Post & { likeCount: number; likedByMe: boolean };
 
 export type SafeUser = Omit<User, "password">;
