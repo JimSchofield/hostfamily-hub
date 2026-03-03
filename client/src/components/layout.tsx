@@ -1,7 +1,6 @@
 import { Link, useLocation } from "wouter";
-import { Home, LayoutDashboard, Plus, LogOut, CalendarDays } from "lucide-react";
+import { Home, LayoutDashboard, Plus, LogOut } from "lucide-react";
 import { SubmitPostDialog } from "./submit-post-dialog";
-import { CreateEventDialog } from "./create-event-dialog";
 import { useState } from "react";
 import { useAuth, useLogout } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
@@ -11,7 +10,6 @@ import usahLogo from "@assets/USAH-Logo_1772557803462.jpg";
 export function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isEventDialogOpen, setIsEventDialogOpen] = useState(false);
   const { data: user } = useAuth();
   const logout = useLogout();
   const { toast } = useToast();
@@ -30,18 +28,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
 
           {/* Dual branding logos */}
-          <Link href="/" className="flex items-center gap-3 shrink-0 group" data-testid="link-home">
-            <img
-              src={hcLogo}
-              alt="The Hospitality Center"
-              className="h-8 w-auto object-contain"
-            />
+          <Link href="/" className="flex items-center gap-3 shrink-0" data-testid="link-home">
+            <img src={hcLogo} alt="The Hospitality Center" className="h-8 w-auto object-contain" />
             <div className="w-px h-7 bg-border" />
-            <img
-              src={usahLogo}
-              alt="USA Homestays"
-              className="h-7 w-auto object-contain"
-            />
+            <img src={usahLogo} alt="USA Homestays" className="h-7 w-auto object-contain" />
           </Link>
 
           <nav className="flex items-center gap-1.5">
@@ -74,15 +64,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
             )}
 
             <div className="w-px h-6 bg-border mx-1" />
-
-            <button
-              data-testid="button-create-event"
-              onClick={() => setIsEventDialogOpen(true)}
-              className="flex items-center gap-1.5 bg-emerald-600 text-white px-3 py-2 rounded-lg text-sm font-bold shadow-md shadow-emerald-600/20 transition-all"
-            >
-              <CalendarDays className="w-4 h-4" />
-              <span className="hidden sm:block">Event</span>
-            </button>
 
             <button
               data-testid="button-share"
@@ -120,7 +101,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </main>
 
       <SubmitPostDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} />
-      <CreateEventDialog open={isEventDialogOpen} onOpenChange={setIsEventDialogOpen} />
     </div>
   );
 }

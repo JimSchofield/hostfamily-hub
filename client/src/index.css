@@ -9,49 +9,48 @@
     --font-sans: 'DM Sans', sans-serif;
     --font-display: 'Outfit', sans-serif;
 
-    /* WARM, WELCOMING THEME */
-    --background: 35 33% 98%;      /* Warm off-white */
-    --foreground: 222 47% 11%;     /* Deep charcoal */
+    /* BLUE & RED PATRIOTIC THEME */
+    --background: 216 33% 97%;      /* Very light cool blue-white */
+    --foreground: 218 47% 11%;      /* Deep navy */
     
-    --card: 0 0% 100%;             /* Pure white */
-    --card-foreground: 222 47% 11%;
+    --card: 0 0% 100%;              /* Pure white */
+    --card-foreground: 218 47% 11%;
     
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover-foreground: 218 47% 11%;
     
-    /* Soft Terracotta / Coral */
-    --primary: 12 76% 61%;
+    /* USA Homestays Blue */
+    --primary: 218 68% 40%;
     --primary-foreground: 0 0% 100%;
     
-    /* Warm Sand */
-    --secondary: 35 40% 92%;
-    --secondary-foreground: 24 10% 20%;
+    /* Light Blue */
+    --secondary: 216 50% 92%;
+    --secondary-foreground: 218 40% 20%;
     
-    --muted: 35 30% 94%;
-    --muted-foreground: 35 15% 45%;
+    --muted: 216 30% 93%;
+    --muted-foreground: 216 18% 46%;
     
-    /* Warm Sage Green for Accents */
-    --accent: 142 34% 45%;
+    /* Red Accent (HC / USA Homestays red) */
+    --accent: 0 78% 52%;
     --accent-foreground: 0 0% 100%;
     
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 35 20% 88%;
-    --input: 35 20% 88%;
-    --ring: 12 76% 61%;
+    --border: 216 22% 87%;
+    --input: 216 22% 87%;
+    --ring: 218 68% 40%;
     
     --radius: 1rem;
     
-    /* Custom Shadows for Depth */
-    --shadow-soft: 0 10px 40px -10px rgba(0,0,0,0.03), 0 4px 10px -5px rgba(0,0,0,0.02);
-    --shadow-hover: 0 20px 40px -10px rgba(0,0,0,0.06), 0 8px 16px -8px rgba(0,0,0,0.04);
+    --shadow-soft: 0 10px 40px -10px rgba(0,0,0,0.04), 0 4px 10px -5px rgba(0,0,0,0.02);
+    --shadow-hover: 0 20px 40px -10px rgba(0,0,0,0.07), 0 8px 16px -8px rgba(0,0,0,0.04);
   }
 
   body {
     @apply bg-background text-foreground antialiased selection:bg-primary/20 selection:text-primary;
     font-family: var(--font-sans);
-    background-image: radial-gradient(hsl(var(--primary)/0.05) 1px, transparent 1px);
+    background-image: radial-gradient(hsl(var(--primary)/0.06) 1px, transparent 1px);
     background-size: 32px 32px;
   }
 
