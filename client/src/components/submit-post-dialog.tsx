@@ -190,10 +190,17 @@ export function SubmitPostDialog({ mode, open, onOpenChange }: Props) {
           <DialogTitle className="text-xl font-bold">
             {isShareMode ? "Share something!" : "Need something?"}
           </DialogTitle>
-          <DialogDescription className="text-sm text-muted-foreground mt-1">
-            {isShareMode
-              ? "Share a story, photo, or create a community event for all host families."
-              : "Ask your coordinator a question, share a prayer request, or get support."}
+          <DialogDescription className="text-sm text-muted-foreground mt-1" asChild>
+            {isShareMode ? (
+              <p>Share a story, photo, or create a community event for all host families.</p>
+            ) : (
+              <p>
+                Ask your coordinator a question, share a prayer request, or get support.{" "}
+                <span className="font-medium text-foreground/70">
+                  Note: these messages are only shared privately with USA Homestays and Hospitality Center staff.
+                </span>
+              </p>
+            )}
           </DialogDescription>
         </DialogHeader>
 
