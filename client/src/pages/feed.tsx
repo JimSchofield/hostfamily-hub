@@ -51,7 +51,7 @@ export default function FeedPage() {
   return (
     <Layout>
       <div className="mb-10 flex flex-col items-center text-center space-y-3 max-w-2xl mx-auto pt-4">
-        <div className="inline-flex items-center px-6 pb-3 pt-6 rounded-full bg-primary/10 text-primary font-bold text-3xl md:text-4xl tracking-wide">
+        <div className="inline-flex items-center px-6 pb-3 pt-6 rounded-full bg-primary/10 text-primary text-3xl md:text-4xl tracking-wide" style={{ fontFamily: "'Abril Fatface', cursive" }}>
           <HouseH />ost Family&nbsp;<HouseH />ub
         </div>
         <h1 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight">
