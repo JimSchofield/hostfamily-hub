@@ -13,7 +13,7 @@ function getInitial(name: string): string {
 
 const TYPE_CONFIG = {
   story:    { icon: BookOpen,       label: "Story",          color: "text-primary",   bg: "bg-primary/10" },
-  picture:  { icon: Camera,         label: "Picture",        color: "text-violet-500", bg: "bg-violet-500/10" },
+  picture:  { icon: Camera,         label: "Picture",        color: "text-cyan-600",   bg: "bg-cyan-500/10" },
   prayer:   { icon: Heart,          label: "Prayer Request", color: "text-rose-500",  bg: "bg-rose-500/10" },
   question: { icon: MessageCircle,  label: "Question",       color: "text-blue-500",  bg: "bg-blue-500/10" },
   help:     { icon: HelpCircle,     label: "Needs Help",     color: "text-amber-500", bg: "bg-amber-500/10" },
