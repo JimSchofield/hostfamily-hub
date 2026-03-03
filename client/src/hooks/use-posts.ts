@@ -1,77 +1,100 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { api, type PostResponse, type PostsListResponse, type PostInput } from "@shared/routes";
+import { api, type PostResponse, type PostsListResponse, type PostInput, type ReplyResponse } from "@shared/routes";
+import type { Reply } from "@shared/schema";
 import { z } from "zod";
 
-// Helper to log Zod errors for easier debugging
-function parseWithLogging<T>(schema: z.ZodSchema<T>, data: unknown, label: string): T {
-  const result = schema.safeParse(data);
-  if (!result.success) {
-    console.error(`[Zod] ${label} validation failed:`, result.error.format());
-    throw new Error(`Invalid response format from ${label}`);
-  }
-  return result.data;
+async function apiFetch(url: string, options?: RequestInit) {
+  const res = await fetch(url, { credentials: "include", ...options });
+  return res;
 }
 
 export function usePublicPosts() {
-  return useQuery({
+  return useQuery<PostsListResponse>({
     queryKey: [api.posts.listPublic.path],
     queryFn: async () => {
-      const res = await fetch(api.posts.listPublic.path, { credentials: "include" });
-      if (!res.ok) throw new Error('Failed to fetch public posts');
-      const data = await res.json();
-      return parseWithLogging(api.posts.listPublic.responses[200], data, "public posts");
+      const res = await apiFetch(api.posts.listPublic.path);
+      if (!res.ok) throw new Error("Failed to fetch posts");
+      return res.json();
     },
   });
 }
 
 export function usePrivatePosts() {
-  return useQuery({
+  return useQuery<PostsListResponse>({
     queryKey: [api.posts.listPrivate.path],
     queryFn: async () => {
-      const res = await fetch(api.posts.listPrivate.path, { credentials: "include" });
-      if (!res.ok) throw new Error('Failed to fetch private posts');
-      const data = await res.json();
-      return parseWithLogging(api.posts.listPrivate.responses[200], data, "private posts");
+      const res = await apiFetch(api.posts.listPrivate.path);
+      if (!res.ok) throw new Error("Failed to fetch private posts");
+      return res.json();
     },
   });
 }
 
 export function useCreatePost() {
   const queryClient = useQueryClient();
-  
   return useMutation({
     mutationFn: async (data: PostInput) => {
-      const validated = api.posts.create.input.parse(data);
-      const res = await fetch(api.posts.create.path, {
-        method: api.posts.create.method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(validated),
-        credentials: "include",
+      const res = await apiFetch(api.posts.create.path, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
       });
-      
-      if (!res.ok) {
-        if (res.status === 400) {
-          const errorData = await res.json();
-          // Attempt to parse standard validation error
-          const error = api.posts.create.responses[400].safeParse(errorData);
-          if (error.success) {
-            throw new Error(error.data.message);
-          }
-          throw new Error('Validation failed');
-        }
-        throw new Error('Failed to create post');
-      }
-      
-      const responseData = await res.json();
-      return parseWithLogging(api.posts.create.responses[201], responseData, "create post");
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.message || "Failed to create post");
+      return json as PostResponse;
     },
     onSuccess: (newPost) => {
-      // Invalidate relevant queries based on post visibility
       if (newPost.isPublic) {
         queryClient.invalidateQueries({ queryKey: [api.posts.listPublic.path] });
       } else {
         queryClient.invalidateQueries({ queryKey: [api.posts.listPrivate.path] });
       }
+    },
+  });
+}
+
+export function useReplies(postId: number) {
+  return useQuery<Reply[]>({
+    queryKey: ["/api/posts", postId, "replies"],
+    queryFn: async () => {
+      const res = await apiFetch(`/api/posts/${postId}/replies`);
+      if (!res.ok) throw new Error("Failed to fetch replies");
+      return res.json();
+    },
+  });
+}
+
+export function useCreateReply(postId: number) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (content: string) => {
+      const res = await apiFetch(`/api/posts/${postId}/replies`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.message || "Failed to send reply");
+      return json as ReplyResponse;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/posts", postId, "replies"] });
+    },
+  });
+}
+
+export function useUploadImage() {
+  return useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append("image", file);
+      const res = await apiFetch("/api/upload/image", {
+        method: "POST",
+        body: formData,
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.message || "Upload failed");
+      return json as { imageUrl: string };
     },
   });
 }

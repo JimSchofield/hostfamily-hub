@@ -1,65 +1,100 @@
 import { Link, useLocation } from "wouter";
-import { Heart, Home, LayoutDashboard, Plus } from "lucide-react";
+import { Heart, Home, LayoutDashboard, Plus, LogOut, ChevronDown } from "lucide-react";
 import { SubmitPostDialog } from "./submit-post-dialog";
 import { useState } from "react";
+import { useAuth, useLogout } from "@/hooks/use-auth";
+import { useToast } from "@/hooks/use-toast";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const { data: user } = useAuth();
+  const logout = useLogout();
+  const { toast } = useToast();
+
+  const isCoordinator = user?.role === "coordinator";
+
+  function handleLogout() {
+    logout.mutate(undefined, {
+      onSuccess: () => toast({ title: "Signed out successfully" }),
+    });
+  }
 
   return (
     <div className="min-h-screen flex flex-col relative">
-      {/* Header */}
-      <header className="sticky top-0 z-40 w-full glass-card border-b-0 border-t-0 border-x-0 rounded-none rounded-b-3xl">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-primary/80 flex items-center justify-center text-white shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform">
-              <Heart className="w-5 h-5 fill-white" />
+      <header className="sticky top-0 z-40 w-full bg-background/90 backdrop-blur border-b border-border">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
+          <Link href="/" className="flex items-center gap-2.5 group shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-primary to-primary/70 flex items-center justify-center text-white shadow-md shadow-primary/20 group-hover:scale-105 transition-transform">
+              <Heart className="w-4.5 h-4.5 fill-white" />
             </div>
-            <span className="font-display font-bold text-xl text-foreground hidden sm:block tracking-wide">
+            <span className="font-bold text-lg text-foreground hidden sm:block tracking-tight">
               HostFamily <span className="text-primary font-light">Hub</span>
             </span>
           </Link>
 
-          <nav className="flex items-center gap-2 sm:gap-4">
-            <Link 
-              href="/" 
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
-                location === '/' 
-                  ? 'bg-secondary text-primary shadow-sm' 
-                  : 'text-muted-foreground hover:bg-secondary/50 hover:text-foreground'
+          <nav className="flex items-center gap-1.5">
+            <Link
+              href="/"
+              data-testid="link-feed"
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                location === "/"
+                  ? "bg-secondary text-primary"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
               }`}
             >
               <Home className="w-4 h-4" />
-              <span className="hidden sm:block">Community Feed</span>
-            </Link>
-            
-            <Link 
-              href="/dashboard" 
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
-                location === '/dashboard' 
-                  ? 'bg-secondary text-primary shadow-sm' 
-                  : 'text-muted-foreground hover:bg-secondary/50 hover:text-foreground'
-              }`}
-            >
-              <LayoutDashboard className="w-4 h-4" />
-              <span className="hidden sm:block">Coordinator</span>
+              <span className="hidden sm:block">Community</span>
             </Link>
 
-            <div className="w-px h-8 bg-border mx-1 sm:mx-2" />
+            {isCoordinator && (
+              <Link
+                href="/dashboard"
+                data-testid="link-dashboard"
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                  location === "/dashboard"
+                    ? "bg-secondary text-primary"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                }`}
+              >
+                <LayoutDashboard className="w-4 h-4" />
+                <span className="hidden sm:block">Coordinator</span>
+              </Link>
+            )}
+
+            <div className="w-px h-6 bg-border mx-1" />
 
             <button
+              data-testid="button-share"
               onClick={() => setIsDialogOpen(true)}
-              className="flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-primary/25 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200"
+              className="flex items-center gap-1.5 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-bold shadow-md shadow-primary/20 transition-all"
             >
               <Plus className="w-4 h-4" />
-              Share / Ask
+              <span className="hidden sm:block">Share / Ask</span>
             </button>
+
+            {user && (
+              <div className="flex items-center gap-1.5 ml-1">
+                <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm shrink-0">
+                  {user.name.charAt(0).toUpperCase()}
+                </div>
+                <span className="text-sm font-medium text-foreground hidden md:block max-w-[100px] truncate" data-testid="text-username">
+                  {user.name}
+                </span>
+                <button
+                  data-testid="button-logout"
+                  onClick={handleLogout}
+                  className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                  title="Sign out"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </div>
+            )}
           </nav>
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-12">
         {children}
       </main>
