@@ -22,7 +22,7 @@ function HouseH() {
           transform: "translateX(-50%)",
           width: "0.82em",
           height: "auto",
-          marginBottom: "0.15em",
+          marginBottom: "0.05em",
         }}
       >
         <polygon points="10,0 0,9 20,9" />
@@ -58,7 +58,7 @@ export default function FeedPage() {
           Share. Connect. Celebrate.
         </h1>
         <p className="text-base text-muted-foreground">
-          From first dinners to lasting friendships, share your stories, events, as you welcome and love international students.
+          From first dinners to lasting friendships, share your stories, events, and milestones as you welcome and love international students.
         </p>
       </div>
 
