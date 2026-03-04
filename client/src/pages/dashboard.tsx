@@ -133,7 +133,7 @@ function UserManagement() {
                       data-testid={`button-make-coordinator-${user.id}`}
                       onClick={() => updateUser.mutate({ id: user.id, updates: { role: "coordinator" } })}
                       disabled={updateUser.isPending}
-                      className="px-2.5 py-1 bg-primary text-primary-foreground text-[10px] font-bold rounded-lg disabled:opacity-50"
+                      className="px-2.5 py-1 bg-destructive text-destructive-foreground text-[10px] font-bold rounded-lg disabled:opacity-50"
                     >
                       Make Coordinator
                     </button>
