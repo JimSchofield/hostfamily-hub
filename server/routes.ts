@@ -13,6 +13,46 @@ function getResendClient(): Resend | null {
   return new Resend(key);
 }
 
+const PRIVATE_TYPE_LABELS: Record<string, string> = {
+  question: "Question",
+  prayer: "Prayer Request",
+  help: "Help Request",
+};
+
+async function sendNewRequestNotification(
+  coordinatorEmail: string,
+  coordinatorName: string,
+  authorName: string,
+  postType: string,
+  postContent: string
+) {
+  const resend = getResendClient();
+  if (!resend) return;
+  const typeLabel = PRIVATE_TYPE_LABELS[postType] ?? "Private Request";
+  try {
+    await resend.emails.send({
+      from: "HostFamily Hub <onboarding@resend.dev>",
+      to: coordinatorEmail,
+      subject: `New ${typeLabel} from ${authorName}`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 560px; margin: 0 auto; color: #1a1a2e;">
+          <h2 style="color: #1e429f;">New ${typeLabel} on HostFamily Hub</h2>
+          <p>Hi ${coordinatorName},</p>
+          <p><strong>${authorName}</strong> has submitted a new ${typeLabel.toLowerCase()}:</p>
+          <blockquote style="border-left: 3px solid #cbd5e1; margin: 12px 0; padding: 8px 16px; color: #64748b; font-style: italic;">
+            ${postContent}
+          </blockquote>
+          <p>Log in to the Coordinator Dashboard to view and reply.</p>
+          <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
+          <p style="font-size: 12px; color: #94a3b8;">HostFamily Hub — The Hospitality Center &amp; USA Homestays</p>
+        </div>
+      `,
+    });
+  } catch (err) {
+    console.error("Failed to send new request email:", err);
+  }
+}
+
 async function sendReplyNotification(
   toEmail: string,
   toName: string,
@@ -172,6 +212,20 @@ export async function registerRoutes(
       const input = api.posts.create.input.parse(req.body);
       const post = await storage.createPost(input);
       res.status(201).json(post);
+
+      // Notify all coordinators when a private request comes in (fire-and-forget)
+      if (!post.isPublic && ["question", "prayer", "help"].includes(post.type)) {
+        const coordinators = await storage.getCoordinators();
+        for (const coordinator of coordinators) {
+          sendNewRequestNotification(
+            coordinator.email,
+            coordinator.name,
+            post.authorName,
+            post.type,
+            post.content
+          );
+        }
+      }
     } catch (err) {
       if (err instanceof z.ZodError) {
         return res.status(400).json({ message: err.errors[0].message, field: err.errors[0].path.join(".") });
