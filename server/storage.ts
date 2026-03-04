@@ -13,6 +13,7 @@ export interface IStorage {
   updateUser(id: number, updates: Partial<Pick<User, "status" | "role">>): Promise<User>;
   getAllUsers(): Promise<SafeUser[]>;
 
+  getPostById(id: number): Promise<Post | undefined>;
   getPublicPosts(userId?: number): Promise<PostWithLikes[]>;
   getPrivatePosts(): Promise<Post[]>;
   createPost(post: InsertPost): Promise<Post>;
@@ -62,6 +63,11 @@ export class DatabaseStorage implements IStorage {
   async getAllUsers(): Promise<SafeUser[]> {
     const all = await db.select().from(users);
     return all.map(toSafeUser);
+  }
+
+  async getPostById(id: number): Promise<Post | undefined> {
+    const [post] = await db.select().from(posts).where(eq(posts.id, id));
+    return post;
   }
 
   async getPublicPosts(userId?: number): Promise<PostWithLikes[]> {

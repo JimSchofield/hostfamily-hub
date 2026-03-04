@@ -5,6 +5,50 @@ import { api } from "@shared/routes";
 import { z } from "zod";
 import { hashPassword, comparePasswords, requireApproved, requireCoordinator } from "./auth";
 import multer from "multer";
+import { Resend } from "resend";
+
+function getResendClient(): Resend | null {
+  const key = process.env.RESEND_API_KEY;
+  if (!key) return null;
+  return new Resend(key);
+}
+
+async function sendReplyNotification(
+  toEmail: string,
+  toName: string,
+  postContent: string,
+  replyContent: string,
+  coordinatorName: string
+) {
+  const resend = getResendClient();
+  if (!resend) return;
+  try {
+    await resend.emails.send({
+      from: "HostFamily Hub <onboarding@resend.dev>",
+      to: toEmail,
+      subject: "The coordinator replied to your request",
+      html: `
+        <div style="font-family: sans-serif; max-width: 560px; margin: 0 auto; color: #1a1a2e;">
+          <h2 style="color: #1e429f;">You have a new reply on HostFamily Hub</h2>
+          <p>Hi ${toName},</p>
+          <p>${coordinatorName} has replied to your private request:</p>
+          <blockquote style="border-left: 3px solid #cbd5e1; margin: 12px 0; padding: 8px 16px; color: #64748b; font-style: italic;">
+            ${postContent}
+          </blockquote>
+          <div style="background: #f1f5f9; border-radius: 8px; padding: 16px; margin: 16px 0;">
+            <strong>${coordinatorName} wrote:</strong>
+            <p style="margin: 8px 0 0;">${replyContent}</p>
+          </div>
+          <p>Log in to HostFamily Hub to see the full conversation and continue the discussion.</p>
+          <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
+          <p style="font-size: 12px; color: #94a3b8;">HostFamily Hub — The Hospitality Center &amp; USA Homestays</p>
+        </div>
+      `,
+    });
+  } catch (err) {
+    console.error("Failed to send reply email:", err);
+  }
+}
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -155,13 +199,28 @@ export async function registerRoutes(
     try {
       const input = api.replies.create.input.parse(req.body);
       const postId = parseInt(req.params.id);
-      const user = await storage.getUserById(req.session.userId!);
+      const coordinator = await storage.getUserById(req.session.userId!);
       const reply = await storage.createReply({
         postId,
-        authorName: user?.name ?? "Coordinator",
+        authorName: coordinator?.name ?? "Coordinator",
         content: input.content,
       });
       res.status(201).json(reply);
+
+      // Send email notification to the post author (fire-and-forget)
+      const post = await storage.getPostById(postId);
+      if (post?.userId) {
+        const author = await storage.getUserById(post.userId);
+        if (author?.email) {
+          sendReplyNotification(
+            author.email,
+            author.name,
+            post.content,
+            input.content,
+            coordinator?.name ?? "Your coordinator"
+          );
+        }
+      }
     } catch (err) {
       if (err instanceof z.ZodError) {
         return res.status(400).json({ message: err.errors[0].message });
