@@ -6,16 +6,15 @@ import { useCreateEvent } from "@/hooks/use-events";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import {
-  Camera, BookOpen, Heart, MessageCircle, HelpCircle,
+  Camera, Heart, MessageCircle, HelpCircle,
   Loader2, Upload, Link as LinkIcon, X, CalendarDays,
   Clock, MapPin, DollarSign, Info,
 } from "lucide-react";
 import { motion } from "framer-motion";
 
 const SHARE_TYPES = [
-  { id: "story",   label: "Share Story",   icon: BookOpen,     public: true,  desc: "Inspire others" },
-  { id: "picture", label: "Share Picture", icon: Camera,       public: true,  desc: "Post a photo" },
-  { id: "event",   label: "Plan Hang-out", icon: CalendarDays, public: true,  desc: "Invite families" },
+  { id: "story",   label: "Share picture or story", icon: Camera,       public: true,  desc: "Photos & stories" },
+  { id: "event",   label: "Plan Hang-out",          icon: CalendarDays, public: true,  desc: "Invite families" },
 ] as const;
 
 const NEED_TYPES = [
@@ -133,7 +132,7 @@ export function SubmitPostDialog({ mode, open, onOpenChange }: Props) {
     }
 
     let finalImageUrl: string | undefined = undefined;
-    if (selectedType === "picture") {
+    if (selectedType === "story") {
       if (imageMode === "file" && imageFile) {
         try {
           const result = await uploadImage.mutateAsync(imageFile);
@@ -289,9 +288,12 @@ export function SubmitPostDialog({ mode, open, onOpenChange }: Props) {
             </motion.div>
           )}
 
-          {/* Picture image input */}
-          {selectedType === "picture" && (
+          {/* Optional image input */}
+          {selectedType === "story" && (
             <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="space-y-3">
+              <label className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+                Add a photo <span className="text-xs font-normal text-muted-foreground">(optional)</span>
+              </label>
               <div className="flex gap-2">
                 <button type="button" data-testid="button-image-url" onClick={() => { setImageMode("url"); clearImage(); }}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${imageMode === "url" ? "border-primary bg-primary/5 text-primary" : "border-border text-muted-foreground"}`}>
@@ -332,7 +334,7 @@ export function SubmitPostDialog({ mode, open, onOpenChange }: Props) {
           {selectedType !== "event" && (
             <div className="space-y-2">
               <label className="text-sm font-semibold text-foreground">
-                {selectedType === "picture" ? "Caption" : "Message"}
+                Message
               </label>
               <textarea
                 data-testid="input-content"
@@ -342,11 +344,10 @@ export function SubmitPostDialog({ mode, open, onOpenChange }: Props) {
                 rows={4}
                 className={`${inputClass} resize-none`}
                 placeholder={
-                  selectedType === "picture"   ? "Write a caption..."
-                  : selectedType === "prayer"  ? "Share your prayer request with the coordinator..."
+                  selectedType === "prayer"   ? "Share your prayer request with the coordinator..."
                   : selectedType === "question" ? "What would you like to ask?"
                   : selectedType === "help"    ? "Describe how we can help you..."
-                  : "Share your hosting story..."
+                  : "Share a story, caption, or anything on your heart..."
                 }
               />
             </div>

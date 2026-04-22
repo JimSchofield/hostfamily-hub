@@ -152,10 +152,12 @@ export function PostCard({
 
       <div className="p-5 flex-1 flex flex-col">
         <div className="flex items-center justify-between mb-3 gap-2">
-          <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${config.bg} ${config.color}`}>
-            <Icon className="w-3.5 h-3.5" />
-            {config.label}
-          </div>
+          {post.type !== "story" && post.type !== "picture" && (
+            <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${config.bg} ${config.color}`}>
+              <Icon className="w-3.5 h-3.5" />
+              {config.label}
+            </div>
+          )}
           {!post.isPublic && (
             <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground bg-muted px-2 py-0.5 rounded-md">
               Private
