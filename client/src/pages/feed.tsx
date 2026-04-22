@@ -62,7 +62,7 @@ export default function FeedPage() {
           Share. Connect. Celebrate.
         </h1>
         <p className="text-base text-muted-foreground">
-          From first dinners to lasting friendships, share your stories, events, and milestones as you welcome and love international students.
+          From first dinners to lasting friendships, share your stories, hang-outs, and milestones as you welcome and love international students.
         </p>
 
         {/* Action buttons */}
@@ -111,7 +111,7 @@ export default function FeedPage() {
           </div>
           <h3 className="text-xl font-bold text-foreground mb-2">Nothing here yet</h3>
           <p className="text-muted-foreground max-w-md mx-auto text-sm">
-            Be the first to share a story, picture, or create a community event!
+            Be the first to share a story, picture, or plan a hang-out!
           </p>
         </motion.div>
       )}

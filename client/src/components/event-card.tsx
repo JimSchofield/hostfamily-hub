@@ -55,7 +55,7 @@ export function EventCard({ event, index = 0 }: { event: EventWithAttendees; ind
       <div className="bg-gradient-to-r from-red-500/10 to-rose-400/10 border-b border-red-200/30 px-5 py-3 rounded-t-2xl flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <CalendarDays className="w-4 h-4 text-red-500 shrink-0" />
-          <span className="text-xs font-bold text-red-600 uppercase tracking-wider">Community Event</span>
+          <span className="text-xs font-bold text-red-600 uppercase tracking-wider">Come hang out!</span>
         </div>
         <div className="flex items-center gap-2">
           {isPast && (

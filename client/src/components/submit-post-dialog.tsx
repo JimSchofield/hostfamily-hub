@@ -15,7 +15,7 @@ import { motion } from "framer-motion";
 const SHARE_TYPES = [
   { id: "story",   label: "Share Story",   icon: BookOpen,     public: true,  desc: "Inspire others" },
   { id: "picture", label: "Share Picture", icon: Camera,       public: true,  desc: "Post a photo" },
-  { id: "event",   label: "Create Event",  icon: CalendarDays, public: true,  desc: "Invite families" },
+  { id: "event",   label: "Plan Hang-out", icon: CalendarDays, public: true,  desc: "Invite families" },
 ] as const;
 
 const NEED_TYPES = [
@@ -121,11 +121,11 @@ export function SubmitPostDialog({ mode, open, onOpenChange }: Props) {
         { ...eventForm, estimatedCost: eventForm.estimatedCost || "Free" },
         {
           onSuccess: () => {
-            toast({ title: "Event created!", description: "Your event is now visible to all host families." });
+            toast({ title: "Hang-out planned!", description: "Your hang-out is now visible to all host families." });
             handleClose();
           },
           onError: (err) => {
-            toast({ title: "Failed to create event", description: err.message, variant: "destructive" });
+            toast({ title: "Failed to plan hang-out", description: err.message, variant: "destructive" });
           },
         }
       );
@@ -192,7 +192,7 @@ export function SubmitPostDialog({ mode, open, onOpenChange }: Props) {
           </DialogTitle>
           <DialogDescription className="text-sm text-muted-foreground mt-1" asChild>
             {isShareMode ? (
-              <p>Share a story, photo, or create a community event for all host families.</p>
+              <p>Share a story, photo, or plan a hang-out for all host families.</p>
             ) : (
               <p>
                 Ask your coordinator a question, share a prayer request, or get support.{" "}
@@ -244,12 +244,12 @@ export function SubmitPostDialog({ mode, open, onOpenChange }: Props) {
               <div className="flex items-start gap-2.5 bg-amber-50 border border-amber-200 rounded-xl p-3">
                 <Info className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                 <p className="text-xs text-amber-700 leading-relaxed">
-                  Only post events open and appropriate for <strong>any host family and international student</strong> to attend together.
+                  Only post hang-outs open and appropriate for <strong>any host family and international student</strong> to attend together.
                 </p>
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-sm font-semibold text-foreground">Event Title <span className="text-destructive">*</span></label>
+                <label className="text-sm font-semibold text-foreground">Hang-out Title <span className="text-destructive">*</span></label>
                 <input data-testid="input-event-title" name="title" value={eventForm.title} onChange={handleEventChange} required className={inputClass} placeholder="e.g. Fall Harvest Picnic in the Park" />
               </div>
 
@@ -356,7 +356,7 @@ export function SubmitPostDialog({ mode, open, onOpenChange }: Props) {
           <div className="flex items-center justify-between pt-2 border-t border-border">
             <div className="text-xs font-medium">
               {selectedType === "event" ? (
-                <span className="text-red-600 bg-red-50 border border-red-100 px-2.5 py-1 rounded-md">Public event</span>
+                <span className="text-red-600 bg-red-50 border border-red-100 px-2.5 py-1 rounded-md">Public hang-out</span>
               ) : currentType.public ? (
                 <span className="text-primary bg-primary/10 px-2.5 py-1 rounded-md">Public post</span>
               ) : (
@@ -382,8 +382,8 @@ export function SubmitPostDialog({ mode, open, onOpenChange }: Props) {
               >
                 {isSubmitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                 {isSubmitting
-                  ? selectedType === "event" ? "Creating..." : "Submitting..."
-                  : selectedType === "event" ? "Create Event" : "Submit"}
+                  ? selectedType === "event" ? "Planning..." : "Submitting..."
+                  : selectedType === "event" ? "Plan Hang-out" : "Submit"}
               </button>
             </div>
           </div>
