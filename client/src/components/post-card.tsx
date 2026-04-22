@@ -165,6 +165,9 @@ export function PostCard({
           )}
         </div>
 
+        {"title" in post && post.title && (
+          <h3 className="text-base font-bold text-foreground leading-snug mb-2">{post.title}</h3>
+        )}
         <p className="text-foreground leading-relaxed whitespace-pre-wrap flex-1 mb-4 text-sm">
           {post.content}
         </p>

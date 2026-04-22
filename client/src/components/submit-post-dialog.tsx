@@ -63,6 +63,7 @@ export function SubmitPostDialog({ mode, open, onOpenChange }: Props) {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [content, setContent] = useState("");
+  const [postTitle, setPostTitle] = useState("");
   const [eventForm, setEventForm] = useState<EventForm>(EMPTY_EVENT);
 
   const allTypes = [...SHARE_TYPES, ...NEED_TYPES] as const;
@@ -93,6 +94,7 @@ export function SubmitPostDialog({ mode, open, onOpenChange }: Props) {
 
   function handleClose() {
     setContent("");
+    setPostTitle("");
     setImageUrl("");
     setImageFile(null);
     setImagePreview(null);
@@ -149,6 +151,7 @@ export function SubmitPostDialog({ mode, open, onOpenChange }: Props) {
       type: selectedType,
       authorName: user.name,
       userId: user.id,
+      title: postTitle.trim() || null,
       content,
       imageUrl: finalImageUrl ?? null,
       isPublic: currentType.public,
@@ -285,6 +288,23 @@ export function SubmitPostDialog({ mode, open, onOpenChange }: Props) {
                 <textarea data-testid="input-event-description" name="description" value={eventForm.description} onChange={handleEventChange} rows={3} className={`${inputClass} resize-none`} placeholder="Share any additional details, what to bring, parking info, etc." />
               </div>
             </motion.div>
+          )}
+
+          {/* Optional title field */}
+          {selectedType === "story" && (
+            <div className="space-y-1.5">
+              <label className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+                Title <span className="text-xs font-normal text-muted-foreground">(optional)</span>
+              </label>
+              <input
+                data-testid="input-post-title"
+                name="postTitle"
+                value={postTitle}
+                onChange={(e) => setPostTitle(e.target.value)}
+                className={inputClass}
+                placeholder="e.g. A wonderful weekend at the market"
+              />
+            </div>
           )}
 
           {/* Optional image input */}

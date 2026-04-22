@@ -17,6 +17,7 @@ export const posts = pgTable("posts", {
   type: text("type").notNull(),
   authorName: text("author_name").notNull(),
   userId: integer("user_id"),
+  title: text("title"),
   content: text("content").notNull(),
   imageUrl: text("image_url"),
   isPublic: boolean("is_public").default(true).notNull(),
