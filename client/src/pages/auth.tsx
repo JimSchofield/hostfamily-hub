@@ -6,6 +6,30 @@ import hcLogo from "@assets/hc-logo_1772557784017.png";
 import usahLogo from "@assets/USAH-Logo_1772557803462.jpg";
 import { motion, AnimatePresence } from "framer-motion";
 
+function HouseH() {
+  return (
+    <span style={{ position: "relative", display: "inline-block" }}>
+      <svg
+        viewBox="0 0 20 9"
+        aria-hidden="true"
+        fill="currentColor"
+        style={{
+          position: "absolute",
+          bottom: "100%",
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "0.82em",
+          height: "auto",
+          marginBottom: "0.05em",
+        }}
+      >
+        <polygon points="10,0 0,9 20,9" />
+      </svg>
+      H
+    </span>
+  );
+}
+
 export default function AuthPage() {
   const [mode, setMode] = useState<"login" | "register">("login");
   const [registered, setRegistered] = useState(false);
@@ -79,9 +103,11 @@ export default function AuthPage() {
             <div className="w-px h-9 bg-border" />
             <img src={usahLogo} alt="USA Homestays" className="h-9 w-auto object-contain" />
           </div>
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-foreground tracking-tight">HostFamily Hub</h1>
-            <p className="text-muted-foreground mt-1 text-sm">
+          <div className="flex flex-col items-center gap-3">
+            <div className="inline-flex items-center px-6 pb-3 pt-6 rounded-full bg-primary/10 text-primary text-3xl font-black tracking-wide" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+              <HouseH />ost Family&nbsp;<HouseH />ub
+            </div>
+            <p className="text-muted-foreground text-sm text-center">
               A community for host families supporting international students
             </p>
           </div>
