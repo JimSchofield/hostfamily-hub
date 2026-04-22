@@ -6,7 +6,7 @@ import { useCreateEvent } from "@/hooks/use-events";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import {
-  Camera, Heart, MessageCircle, HelpCircle,
+  Camera, Heart, MessageCircle,
   Loader2, Upload, Link as LinkIcon, X, CalendarDays,
   Clock, MapPin, DollarSign, Info,
 } from "lucide-react";
@@ -20,7 +20,6 @@ const SHARE_TYPES = [
 const NEED_TYPES = [
   { id: "question", label: "Ask Question",   icon: MessageCircle, public: false, desc: "Ask coordinator" },
   { id: "prayer",   label: "Prayer Request", icon: Heart,          public: false, desc: "Private prayer" },
-  { id: "help",     label: "Get Help",       icon: HelpCircle,    public: false, desc: "Contact support" },
 ] as const;
 
 type ShareTypeId = typeof SHARE_TYPES[number]["id"];
@@ -345,8 +344,7 @@ export function SubmitPostDialog({ mode, open, onOpenChange }: Props) {
                 className={`${inputClass} resize-none`}
                 placeholder={
                   selectedType === "prayer"   ? "Share your prayer request with the coordinator..."
-                  : selectedType === "question" ? "What would you like to ask?"
-                  : selectedType === "help"    ? "Describe how we can help you..."
+                  : selectedType === "question" ? "What would you like to ask or what can we help you with?"
                   : "Share a story, caption, or anything on your heart..."
                 }
               />
