@@ -70,6 +70,17 @@ app.get("/auth/me", async (c) => {
   return c.json(safe(user));
 });
 
+// TEMP DIAGNOSTIC — remove after verifying Secure-cookie gate
+app.get("/_debug/env", async (c) => {
+  return c.json({
+    NETLIFY: process.env.NETLIFY ?? null,
+    CONTEXT: process.env.CONTEXT ?? null,
+    NODE_ENV: process.env.NODE_ENV ?? null,
+    AWS_REGION: process.env.AWS_REGION ?? null,
+    LAMBDA_TASK_ROOT: process.env.LAMBDA_TASK_ROOT ?? null,
+  });
+});
+
 // ── Admin ─────────────────────────────────────────────
 app.get("/admin/users", async (c) => {
   await requireCoordinator(c);
