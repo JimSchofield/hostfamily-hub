@@ -10,6 +10,12 @@ const COOKIE_NAME = "session";
 const SESSION_DAYS = 7;
 const SESSION_MS = SESSION_DAYS * 24 * 60 * 60 * 1000;
 
+// Netlify sets NETLIFY=true and CONTEXT=production|deploy-preview|branch-deploy
+// when running in the deployed function runtime. `netlify dev` does not set
+// either, so absence of both means we're on http://localhost — drop Secure or
+// the browser will silently discard the session cookie.
+const IS_DEPLOYED = !!process.env.NETLIFY || !!process.env.CONTEXT;
+
 export type SessionUser = User;
 
 export async function createSession(c: Context, userId: number): Promise<string> {
@@ -18,7 +24,7 @@ export async function createSession(c: Context, userId: number): Promise<string>
   await db.insert(sessions).values({ id, userId, expiresAt });
   setCookie(c, COOKIE_NAME, id, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: IS_DEPLOYED,
     sameSite: "Lax",
     path: "/",
     maxAge: SESSION_MS / 1000,
