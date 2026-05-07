@@ -10,11 +10,12 @@ const COOKIE_NAME = "session";
 const SESSION_DAYS = 7;
 const SESSION_MS = SESSION_DAYS * 24 * 60 * 60 * 1000;
 
-// Netlify sets NETLIFY=true and CONTEXT=production|deploy-preview|branch-deploy
-// when running in the deployed function runtime. `netlify dev` does not set
-// either, so absence of both means we're on http://localhost — drop Secure or
-// the browser will silently discard the session cookie.
-const IS_DEPLOYED = !!process.env.NETLIFY || !!process.env.CONTEXT;
+// Deployed Netlify Functions run on AWS Lambda, which always sets
+// LAMBDA_TASK_ROOT. `netlify dev` runs functions in a local Node
+// process where it isn't set — so we use this to gate the Secure
+// cookie flag (Secure on https deploys, off on http://localhost
+// where the browser would otherwise drop the cookie silently).
+const IS_DEPLOYED = !!process.env.LAMBDA_TASK_ROOT;
 
 export type SessionUser = User;
 
