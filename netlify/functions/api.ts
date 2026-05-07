@@ -30,6 +30,12 @@ function zerr(err: z.ZodError) {
   return { message: err.errors[0].message, field: err.errors[0].path.join(".") };
 }
 
+function intParam(value: string | undefined): number | null {
+  if (!value) return null;
+  const n = Number(value);
+  return Number.isInteger(n) && n > 0 ? n : null;
+}
+
 // ── Auth ──────────────────────────────────────────────
 app.post("/auth/register", async (c) => {
   const body = await c.req.json();
@@ -79,7 +85,8 @@ app.patch("/admin/users/:id", async (c) => {
   const body = await c.req.json();
   const parsed = api.admin.updateUser.input.safeParse(body);
   if (!parsed.success) return c.json(zerr(parsed.error), 400);
-  const id = parseInt(c.req.param("id"));
+  const id = intParam(c.req.param("id"));
+  if (!id) return c.json({ message: "Invalid user id" }, 400);
   const user = await storage.updateUser(id, parsed.data);
   if (!user) return c.json({ message: "User not found" }, 404);
   // If status moved away from "approved" or role demoted, kill all sessions.
@@ -133,14 +140,29 @@ app.get("/posts/private", async (c) => {
   return c.json(privatePosts);
 });
 
+const PRIVATE_POST_TYPES = new Set(["question", "prayer", "help"]);
+const PUBLIC_POST_TYPES = new Set(["story", "picture", "event"]);
+
 app.post("/posts", async (c) => {
-  await requireApproved(c);
+  const user = await requireApproved(c);
   const body = await c.req.json();
   const parsed = api.posts.create.input.safeParse(body);
   if (!parsed.success) return c.json(zerr(parsed.error), 400);
-  const post = await storage.createPost(parsed.data);
 
-  if (!post.isPublic && ["question", "prayer", "help"].includes(post.type)) {
+  const isPrivate = PRIVATE_POST_TYPES.has(parsed.data.type);
+  const isPublic = PUBLIC_POST_TYPES.has(parsed.data.type);
+  if (!isPrivate && !isPublic) {
+    return c.json({ message: "Unknown post type", field: "type" }, 400);
+  }
+
+  const post = await storage.createPost({
+    ...parsed.data,
+    authorName: user.name,
+    userId: user.id,
+    isPublic: !isPrivate,
+  });
+
+  if (!post.isPublic) {
     const coordinators = await storage.getCoordinators();
     for (const coordinator of coordinators) {
       sendNewRequestNotification(
@@ -158,7 +180,8 @@ app.post("/posts", async (c) => {
 // ── Likes ─────────────────────────────────────────────
 app.post("/posts/:id/like", async (c) => {
   const user = await requireApproved(c);
-  const postId = parseInt(c.req.param("id"));
+  const postId = intParam(c.req.param("id"));
+  if (!postId) return c.json({ message: "Invalid post id" }, 400);
   const result = await storage.toggleLike(postId, user.id);
   return c.json(result);
 });
@@ -167,7 +190,8 @@ app.post("/posts/:id/like", async (c) => {
 // NOTE: GET is coordinator-only — preserved oddity (see ODDITY.md on desktop).
 app.get("/posts/:id/replies", async (c) => {
   await requireCoordinator(c);
-  const postId = parseInt(c.req.param("id"));
+  const postId = intParam(c.req.param("id"));
+  if (!postId) return c.json({ message: "Invalid post id" }, 400);
   const postReplies = await storage.getRepliesByPost(postId);
   return c.json(postReplies);
 });
@@ -177,7 +201,8 @@ app.post("/posts/:id/replies", async (c) => {
   const body = await c.req.json();
   const parsed = api.replies.create.input.safeParse(body);
   if (!parsed.success) return c.json(zerr(parsed.error), 400);
-  const postId = parseInt(c.req.param("id"));
+  const postId = intParam(c.req.param("id"));
+  if (!postId) return c.json({ message: "Invalid post id" }, 400);
   const reply = await storage.createReply({
     postId,
     authorName: coordinator.name,
@@ -225,7 +250,8 @@ app.post("/events", async (c) => {
 
 app.post("/events/:id/attend", async (c) => {
   const user = await requireApproved(c);
-  const eventId = parseInt(c.req.param("id"));
+  const eventId = intParam(c.req.param("id"));
+  if (!eventId) return c.json({ message: "Invalid event id" }, 400);
   const result = await storage.toggleAttendance(eventId, user.id, user.name);
   return c.json(result);
 });

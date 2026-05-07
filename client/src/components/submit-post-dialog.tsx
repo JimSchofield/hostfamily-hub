@@ -207,7 +207,7 @@ export function SubmitPostDialog({ mode, open, onOpenChange }: Props) {
 
         <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-5">
           {/* Type selector */}
-          <div className={`grid gap-2 ${types.length === 3 ? "grid-cols-3" : "grid-cols-2"}`}>
+          <div className="grid gap-2 grid-cols-2">
             {types.map((type) => {
               const Icon = type.icon;
               const isSelected = selectedType === type.id;

@@ -3,19 +3,30 @@ import { storage } from "../server/storage";
 import { hashPassword } from "../server/auth";
 
 async function seed() {
-  const existingCoordinator = await storage.getUserByEmail("coordinator@hostfamilyhub.com");
+  const coordinatorEmail = process.env.SEED_COORDINATOR_EMAIL ?? "coordinator@hostfamilyhub.com";
+  const coordinatorPassword = process.env.SEED_COORDINATOR_PASSWORD;
+
+  if (!coordinatorPassword) {
+    console.error(
+      "SEED_COORDINATOR_PASSWORD is not set. Refusing to seed with a hardcoded default. " +
+      "Set SEED_COORDINATOR_PASSWORD (and optionally SEED_COORDINATOR_EMAIL) in your env and re-run.",
+    );
+    process.exit(1);
+  }
+
+  const existingCoordinator = await storage.getUserByEmail(coordinatorEmail);
   if (!existingCoordinator) {
-    const hashed = await hashPassword("coordinator123");
+    const hashed = await hashPassword(coordinatorPassword);
     await storage.createUser({
       name: "Coordinator",
-      email: "coordinator@hostfamilyhub.com",
+      email: coordinatorEmail,
       password: hashed,
       role: "coordinator",
       status: "approved",
     });
-    console.log("Seeded default coordinator: coordinator@hostfamilyhub.com / coordinator123");
+    console.log(`Seeded coordinator: ${coordinatorEmail}`);
   } else {
-    console.log("Default coordinator already exists, skipping.");
+    console.log("Coordinator already exists, skipping.");
   }
 
   const existingPosts = await storage.getPublicPosts();

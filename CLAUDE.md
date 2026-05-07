@@ -21,6 +21,8 @@ Loaded from `.env` (gitignored). On deployed Netlify, the DB URL is auto-injecte
 
 - `NETLIFY_DATABASE_URL` (or `DATABASE_URL`) — Neon Postgres connection string. Required at boot.
 - `RESEND_API_KEY` — optional. If unset, email notifications are silently skipped.
+- `SEED_COORDINATOR_PASSWORD` — required only when running `pnpm seed`. The seed script refuses to run without this; there is no hardcoded default.
+- `SEED_COORDINATOR_EMAIL` — optional, defaults to `coordinator@hostfamilyhub.com`.
 
 There is no `SESSION_SECRET` — sessions are random IDs stored in a DB table, not signed cookies, so no secret is needed.
 
@@ -67,11 +69,15 @@ Three guard helpers: `requireUser`, `requireApproved`, `requireCoordinator`. The
 
 The 6 MB limit on Function request bodies dictates the upload limit. **Do not** revert to base64-in-DB (the original Replit pattern) — that path is gone.
 
+`GET /api/images/:key` is **unauthenticated** by design — uploaded images appear in the public feed and need to be embeddable. The key is a server-generated random hex string, so URLs are unguessable but anyone with the URL can fetch. If private-post images are ever added, this route needs an auth gate.
+
 ### Adding an endpoint
 
 1. Add the contract to `shared/routes.ts` (path, method, input/response Zod schemas).
 2. Add the route to `netlify/functions/api.ts`. Use `requireApproved`/`requireCoordinator` for guards. Validate input with `api.x.y.input.safeParse(body)`.
 3. If it touches the DB, add a method to `IStorage` in `server/storage.ts` rather than putting query code in the route handler.
+4. **Never trust client-supplied identity fields.** `authorName`, `userId`, and similar identity-bearing fields must come from the session user, not the request body. `POST /posts` and `POST /events` already do this; follow the same pattern.
+5. **Validate route params.** Use `intParam(c.req.param("id"))` for numeric IDs — `parseInt("foo")` returns `NaN` and propagates to the DB layer as a 500.
 
 ### Behavioral note
 

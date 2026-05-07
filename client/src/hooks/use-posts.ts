@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, type PostResponse, type PostInput, type ReplyResponse } from "@shared/routes";
-import type { Reply, PostWithLikes } from "@shared/schema";
+import type { Reply, PostWithLikes, Post } from "@shared/schema";
 import { z } from "zod";
 
 async function apiFetch(url: string, options?: RequestInit) {
@@ -35,7 +35,7 @@ export function useLikePost() {
 }
 
 export function usePrivatePosts() {
-  return useQuery<PostsListResponse>({
+  return useQuery<Post[]>({
     queryKey: [api.posts.listPrivate.path],
     queryFn: async () => {
       const res = await apiFetch(api.posts.listPrivate.path);
