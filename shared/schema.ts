@@ -58,6 +58,13 @@ export const eventAttendees = pgTable("event_attendees", {
   attendeeName: text("attendee_name").notNull(),
 });
 
+export const sessions = pgTable("sessions", {
+  id: text("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const insertUserSchema = createInsertSchema(users).omit({ id: true, createdAt: true, role: true, status: true });
 export const insertPostSchema = createInsertSchema(posts).omit({ id: true, createdAt: true });
 export const insertReplySchema = createInsertSchema(replies).omit({ id: true, createdAt: true });
@@ -75,5 +82,7 @@ export type Event = typeof events.$inferSelect;
 export type InsertEvent = z.infer<typeof insertEventSchema>;
 export type EventAttendee = typeof eventAttendees.$inferSelect;
 export type EventWithAttendees = Event & { attendeeCount: number; isAttending: boolean; attendees: string[] };
+
+export type Session = typeof sessions.$inferSelect;
 
 export type SafeUser = Omit<User, "password">;

@@ -1,0 +1,25 @@
+[build]
+  command = "pnpm build"
+  publish = "dist/public"
+  functions = "netlify/functions"
+
+[dev]
+  command = "pnpm dev:vite"
+  targetPort = 5173
+  port = 8888
+  publish = "dist/public"
+  framework = "#custom"
+
+[functions]
+  node_bundler = "esbuild"
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/api/:splat"
+  status = 200
+
+# SPA fallback — any non-API, non-asset request serves index.html
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
