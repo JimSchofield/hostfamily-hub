@@ -26,7 +26,13 @@ function UserManagement() {
   });
 
   const updateUser = useMutation({
-    mutationFn: async ({ id, updates }: { id: number; updates: { status?: string; role?: string } }) => {
+    mutationFn: async ({
+      id,
+      updates,
+    }: {
+      id: number;
+      updates: { status?: string; role?: string };
+    }) => {
       const res = await fetch(`/api/admin/users/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -39,7 +45,12 @@ function UserManagement() {
     },
     onSuccess: (_, { updates }) => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
-      const action = updates.status === "approved" ? "approved" : updates.status === "rejected" ? "rejected" : "updated";
+      const action =
+        updates.status === "approved"
+          ? "approved"
+          : updates.status === "rejected"
+            ? "rejected"
+            : "updated";
       toast({ title: `User ${action} successfully` });
     },
     onError: (err: Error) => {
@@ -48,15 +59,37 @@ function UserManagement() {
   });
 
   const statusBadge = (status: string) => {
-    if (status === "approved") return <span className="text-[10px] font-bold uppercase tracking-wider text-green-600 bg-green-100 dark:bg-green-900/30 dark:text-green-400 px-2 py-0.5 rounded-md flex items-center gap-1"><CheckCircle className="w-3 h-3" />{status}</span>;
-    if (status === "rejected") return <span className="text-[10px] font-bold uppercase tracking-wider text-destructive bg-destructive/10 px-2 py-0.5 rounded-md flex items-center gap-1"><XCircle className="w-3 h-3" />{status}</span>;
-    return <span className="text-[10px] font-bold uppercase tracking-wider text-amber-600 bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400 px-2 py-0.5 rounded-md flex items-center gap-1"><Clock className="w-3 h-3" />{status}</span>;
+    if (status === "approved")
+      return (
+        <span className="text-[10px] font-bold uppercase tracking-wider text-green-600 bg-green-100 dark:bg-green-900/30 dark:text-green-400 px-2 py-0.5 rounded-md flex items-center gap-1">
+          <CheckCircle className="w-3 h-3" />
+          {status}
+        </span>
+      );
+    if (status === "rejected")
+      return (
+        <span className="text-[10px] font-bold uppercase tracking-wider text-destructive bg-destructive/10 px-2 py-0.5 rounded-md flex items-center gap-1">
+          <XCircle className="w-3 h-3" />
+          {status}
+        </span>
+      );
+    return (
+      <span className="text-[10px] font-bold uppercase tracking-wider text-amber-600 bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400 px-2 py-0.5 rounded-md flex items-center gap-1">
+        <Clock className="w-3 h-3" />
+        {status}
+      </span>
+    );
   };
 
-  if (isLoading) return <div className="flex items-center gap-2 text-muted-foreground text-sm py-4"><Loader2 className="w-4 h-4 animate-spin" /> Loading users...</div>;
+  if (isLoading)
+    return (
+      <div className="flex items-center gap-2 text-muted-foreground text-sm py-4">
+        <Loader2 className="w-4 h-4 animate-spin" /> Loading users...
+      </div>
+    );
 
-  const pending = users?.filter(u => u.status === "pending") ?? [];
-  const others = users?.filter(u => u.status !== "pending") ?? [];
+  const pending = users?.filter((u) => u.status === "pending") ?? [];
+  const others = users?.filter((u) => u.status !== "pending") ?? [];
 
   return (
     <div className="space-y-6">
@@ -67,7 +100,11 @@ function UserManagement() {
           </h3>
           <div className="space-y-2">
             {pending.map((user) => (
-              <div key={user.id} data-testid={`row-user-${user.id}`} className="flex items-center gap-3 bg-card rounded-xl border border-amber-200/60 dark:border-amber-800/30 p-4">
+              <div
+                key={user.id}
+                data-testid={`row-user-${user.id}`}
+                className="flex items-center gap-3 bg-card rounded-xl border border-amber-200/60 dark:border-amber-800/30 p-4"
+              >
                 <div className="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm shrink-0">
                   {getInitial(user.name)}
                 </div>
@@ -79,7 +116,9 @@ function UserManagement() {
                 <div className="flex gap-2 shrink-0">
                   <button
                     data-testid={`button-approve-${user.id}`}
-                    onClick={() => updateUser.mutate({ id: user.id, updates: { status: "approved" } })}
+                    onClick={() =>
+                      updateUser.mutate({ id: user.id, updates: { status: "approved" } })
+                    }
                     disabled={updateUser.isPending}
                     className="px-3 py-1.5 bg-green-600 text-white text-xs font-bold rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
                   >
@@ -87,7 +126,9 @@ function UserManagement() {
                   </button>
                   <button
                     data-testid={`button-reject-${user.id}`}
-                    onClick={() => updateUser.mutate({ id: user.id, updates: { status: "rejected" } })}
+                    onClick={() =>
+                      updateUser.mutate({ id: user.id, updates: { status: "rejected" } })
+                    }
                     disabled={updateUser.isPending}
                     className="px-3 py-1.5 bg-destructive text-destructive-foreground text-xs font-bold rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
                   >
@@ -105,7 +146,11 @@ function UserManagement() {
           <h3 className="text-sm font-bold text-foreground mb-3">All Users ({others.length})</h3>
           <div className="space-y-2">
             {others.map((user) => (
-              <div key={user.id} data-testid={`row-user-${user.id}`} className="flex items-center gap-3 bg-card rounded-xl border border-border p-3.5">
+              <div
+                key={user.id}
+                data-testid={`row-user-${user.id}`}
+                className="flex items-center gap-3 bg-card rounded-xl border border-border p-3.5"
+              >
                 <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0">
                   {getInitial(user.name)}
                 </div>
@@ -115,13 +160,17 @@ function UserManagement() {
                 </div>
                 <div className="flex items-center gap-2">
                   {statusBadge(user.status)}
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground bg-muted px-2 py-0.5 rounded-md">{user.role}</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground bg-muted px-2 py-0.5 rounded-md">
+                    {user.role}
+                  </span>
                 </div>
                 <div className="flex gap-1.5 shrink-0">
                   {user.status !== "approved" && (
                     <button
                       data-testid={`button-approve-${user.id}`}
-                      onClick={() => updateUser.mutate({ id: user.id, updates: { status: "approved" } })}
+                      onClick={() =>
+                        updateUser.mutate({ id: user.id, updates: { status: "approved" } })
+                      }
                       disabled={updateUser.isPending}
                       className="px-2.5 py-1 bg-green-600 text-white text-[10px] font-bold rounded-lg disabled:opacity-50"
                     >
@@ -131,7 +180,9 @@ function UserManagement() {
                   {user.role !== "coordinator" && (
                     <button
                       data-testid={`button-make-coordinator-${user.id}`}
-                      onClick={() => updateUser.mutate({ id: user.id, updates: { role: "coordinator" } })}
+                      onClick={() =>
+                        updateUser.mutate({ id: user.id, updates: { role: "coordinator" } })
+                      }
                       disabled={updateUser.isPending}
                       className="px-2.5 py-1 bg-destructive text-destructive-foreground text-[10px] font-bold rounded-lg disabled:opacity-50"
                     >
@@ -219,7 +270,9 @@ export default function DashboardPage() {
             >
               <SearchX className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
               <h3 className="text-lg font-bold text-foreground mb-1">All caught up!</h3>
-              <p className="text-muted-foreground text-sm">No pending private requests from families right now.</p>
+              <p className="text-muted-foreground text-sm">
+                No pending private requests from families right now.
+              </p>
             </motion.div>
           )}
           {posts && posts.length > 0 && (

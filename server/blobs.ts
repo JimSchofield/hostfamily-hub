@@ -11,10 +11,13 @@ export async function uploadImage(buffer: Buffer, contentType: string): Promise<
   return `/api/images/${key}`;
 }
 
-export async function getImage(key: string): Promise<{ data: ArrayBuffer; contentType: string } | null> {
+export async function getImage(
+  key: string,
+): Promise<{ data: ArrayBuffer; contentType: string } | null> {
   const store = getStore(POST_IMAGES_STORE);
   const result = await store.getWithMetadata(key, { type: "arrayBuffer" });
   if (!result) return null;
-  const contentType = (result.metadata?.contentType as string | undefined) ?? "application/octet-stream";
+  const contentType =
+    (result.metadata?.contentType as string | undefined) ?? "application/octet-stream";
   return { data: result.data as ArrayBuffer, contentType };
 }

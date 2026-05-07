@@ -12,10 +12,7 @@ import {
   requireCoordinator,
   HttpError,
 } from "../../server/session";
-import {
-  sendNewRequestNotification,
-  sendReplyNotification,
-} from "../../server/email";
+import { sendNewRequestNotification, sendReplyNotification } from "../../server/email";
 import { uploadImage, getImage } from "../../server/blobs";
 import { api } from "../../shared/routes";
 

@@ -55,7 +55,9 @@ export function EventCard({ event, index = 0 }: { event: EventWithAttendees; ind
       <div className="bg-gradient-to-r from-red-500/10 to-rose-400/10 border-b border-red-200/30 px-5 py-3 rounded-t-2xl flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <CalendarDays className="w-4 h-4 text-red-500 shrink-0" />
-          <span className="text-xs font-bold text-red-600 uppercase tracking-wider">Come hang out!</span>
+          <span className="text-xs font-bold text-red-600 uppercase tracking-wider">
+            Come hang out!
+          </span>
         </div>
         <div className="flex items-center gap-2">
           {isPast && (
@@ -71,7 +73,10 @@ export function EventCard({ event, index = 0 }: { event: EventWithAttendees; ind
 
       <div className="p-5 flex-1 flex flex-col gap-4">
         {/* Title */}
-        <h3 className="text-base font-bold text-foreground leading-snug" data-testid={`text-event-title-${event.id}`}>
+        <h3
+          className="text-base font-bold text-foreground leading-snug"
+          data-testid={`text-event-title-${event.id}`}
+        >
           {event.title}
         </h3>
 
@@ -154,7 +159,10 @@ export function EventCard({ event, index = 0 }: { event: EventWithAttendees; ind
                 <p className="text-xs font-bold text-foreground mb-2">Who's attending:</p>
                 <div className="flex flex-wrap gap-1.5">
                   {event.attendees.map((name) => (
-                    <span key={name} className="text-xs bg-background border border-border px-2 py-0.5 rounded-full text-foreground">
+                    <span
+                      key={name}
+                      className="text-xs bg-background border border-border px-2 py-0.5 rounded-full text-foreground"
+                    >
                       {name}
                     </span>
                   ))}

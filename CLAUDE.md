@@ -9,11 +9,21 @@ Use `pnpm` for everything (per global preference).
 - `pnpm dev` — start `netlify dev` on port 8888 (Vite on 5173 internally + the API function emulator).
 - `pnpm dev:vite` — Vite alone, no functions. Used by `netlify dev` under the hood; rarely run directly.
 - `pnpm build` — `vite build` → `dist/public/`. The API function is bundled separately by Netlify on deploy (esbuild, configured in `netlify.toml`).
-- `pnpm check` — typecheck only (`tsc --noEmit`). Note: there are 4 pre-existing client errors (`submit-post-dialog.tsx`, `use-posts.ts`, `dashboard.tsx`) that pre-date the Netlify migration. The migration code is clean.
+- `pnpm check` — typecheck only (`tsc --noEmit`).
+- `pnpm lint` — ESLint (flat config in `eslint.config.js`).
+- `pnpm lint:fix` — ESLint with auto-fix.
+- `pnpm format` — Prettier write across the repo.
+- `pnpm format:check` — Prettier verify (CI-friendly).
 - `pnpm db:push` — apply `shared/schema.ts` to Neon via `drizzle-kit push`. No migration files; schema is the source of truth.
-- `pnpm seed` — one-shot DB seed (default coordinator + sample posts). Idempotent — skips entries that already exist.
+- `pnpm seed` — one-shot DB seed (coordinator + sample posts). Idempotent. Requires `SEED_COORDINATOR_PASSWORD`.
 
-There is no test runner, linter, or formatter configured.
+There is no test runner.
+
+### Lint/format conventions
+
+- ESLint ignores `client/src/components/ui/**` (shadcn-generated) and `client/src/hooks/use-toast.ts` (shadcn boilerplate that uses load-bearing `typeof` on a `const`).
+- Prettier ignores `*.md` so docs aren't rewrapped.
+- `eslint-plugin-react-hooks` is pinned to v5 because v7 pulls in Zod v4, which conflicts with this project's Zod v3 pin (see Drizzle note below).
 
 ## Required env vars
 

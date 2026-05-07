@@ -48,21 +48,36 @@ export default function FeedPage() {
   const error = postsError || eventsError;
 
   const feedItems: FeedItem[] = [
-    ...(posts ?? []).map((p) => ({ kind: "post" as const, data: p, createdAt: new Date(p.createdAt) })),
-    ...(events ?? []).map((e) => ({ kind: "event" as const, data: e, createdAt: new Date(e.createdAt) })),
+    ...(posts ?? []).map((p) => ({
+      kind: "post" as const,
+      data: p,
+      createdAt: new Date(p.createdAt),
+    })),
+    ...(events ?? []).map((e) => ({
+      kind: "event" as const,
+      data: e,
+      createdAt: new Date(e.createdAt),
+    })),
   ].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
   return (
     <Layout>
       <div className="mb-12 flex flex-col items-center text-center space-y-4 max-w-2xl mx-auto pt-4">
-        <div className="inline-flex items-center px-6 pb-3 pt-6 rounded-full bg-primary/10 text-primary text-3xl md:text-4xl font-black tracking-wide" style={{ fontFamily: "'Montserrat', sans-serif" }}>
-          <HouseH />ost Family&nbsp;<HouseH />ub
+        <div
+          className="inline-flex items-center px-6 pb-3 pt-6 rounded-full bg-primary/10 text-primary text-3xl md:text-4xl font-black tracking-wide"
+          style={{ fontFamily: "'Montserrat', sans-serif" }}
+        >
+          <HouseH />
+          ost Family&nbsp;
+          <HouseH />
+          ub
         </div>
         <h1 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight">
           Share. Connect. Celebrate.
         </h1>
         <p className="text-base text-muted-foreground">
-          From first dinners to lasting friendships, share your stories, hang-outs, and milestones as you welcome and love international students.
+          From first dinners to lasting friendships, share your stories, hang-outs, and milestones
+          as you welcome and love international students.
         </p>
 
         {/* Action buttons */}
@@ -123,7 +138,7 @@ export default function FeedPage() {
               <PostCard key={`post-${item.data.id}`} post={item.data} index={i} />
             ) : (
               <EventCard key={`event-${item.data.id}`} event={item.data} index={i} />
-            )
+            ),
           )}
         </div>
       )}

@@ -1,31 +1,64 @@
 import { useState, useRef } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { insertPostSchema, type InsertPost } from "@shared/schema";
 import { useCreatePost, useUploadImage } from "@/hooks/use-posts";
 import { useCreateEvent } from "@/hooks/use-events";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import {
-  Camera, Heart, MessageCircle,
-  Loader2, Upload, Link as LinkIcon, X, CalendarDays,
-  Clock, MapPin, DollarSign, Info,
+  Camera,
+  Heart,
+  MessageCircle,
+  Loader2,
+  Upload,
+  Link as LinkIcon,
+  X,
+  CalendarDays,
+  Clock,
+  MapPin,
+  DollarSign,
+  Info,
 } from "lucide-react";
 import { motion } from "framer-motion";
 
 const SHARE_TYPES = [
-  { id: "story",   label: "Share picture or story", icon: Camera,       public: true,  desc: "Photos & stories" },
-  { id: "event",   label: "Plan Hang-out",          icon: CalendarDays, public: true,  desc: "Invite families" },
+  {
+    id: "story",
+    label: "Share picture or story",
+    icon: Camera,
+    public: true,
+    desc: "Photos & stories",
+  },
+  {
+    id: "event",
+    label: "Plan Hang-out",
+    icon: CalendarDays,
+    public: true,
+    desc: "Invite families",
+  },
 ] as const;
 
 const NEED_TYPES = [
-  { id: "question", label: "Ask Question",   icon: MessageCircle, public: false, desc: "Ask coordinator" },
-  { id: "prayer",   label: "Prayer Request", icon: Heart,          public: false, desc: "Private prayer" },
+  {
+    id: "question",
+    label: "Ask Question",
+    icon: MessageCircle,
+    public: false,
+    desc: "Ask coordinator",
+  },
+  { id: "prayer", label: "Prayer Request", icon: Heart, public: false, desc: "Private prayer" },
 ] as const;
 
-type ShareTypeId = typeof SHARE_TYPES[number]["id"];
-type NeedTypeId  = typeof NEED_TYPES[number]["id"];
-type PostTypeId  = ShareTypeId | NeedTypeId;
-type ImageMode   = "url" | "file";
+type ShareTypeId = (typeof SHARE_TYPES)[number]["id"];
+type NeedTypeId = (typeof NEED_TYPES)[number]["id"];
+type PostTypeId = ShareTypeId | NeedTypeId;
+type ImageMode = "url" | "file";
 
 interface EventForm {
   title: string;
@@ -37,7 +70,12 @@ interface EventForm {
 }
 
 const EMPTY_EVENT: EventForm = {
-  title: "", eventDate: "", eventTime: "", location: "", estimatedCost: "", description: "",
+  title: "",
+  eventDate: "",
+  eventTime: "",
+  location: "",
+  estimatedCost: "",
+  description: "",
 };
 
 interface Props {
@@ -67,7 +105,7 @@ export function SubmitPostDialog({ mode, open, onOpenChange }: Props) {
   const [eventForm, setEventForm] = useState<EventForm>(EMPTY_EVENT);
 
   const allTypes = [...SHARE_TYPES, ...NEED_TYPES] as const;
-  const currentType = allTypes.find(t => t.id === selectedType)!;
+  const currentType = allTypes.find((t) => t.id === selectedType)!;
 
   function handleSelectType(type: PostTypeId) {
     setSelectedType(type);
@@ -121,13 +159,20 @@ export function SubmitPostDialog({ mode, open, onOpenChange }: Props) {
         { ...eventForm, estimatedCost: eventForm.estimatedCost || "Free" },
         {
           onSuccess: () => {
-            toast({ title: "Hang-out planned!", description: "Your hang-out is now visible to all host families." });
+            toast({
+              title: "Hang-out planned!",
+              description: "Your hang-out is now visible to all host families.",
+            });
             handleClose();
           },
           onError: (err) => {
-            toast({ title: "Failed to plan hang-out", description: err.message, variant: "destructive" });
+            toast({
+              title: "Failed to plan hang-out",
+              description: err.message,
+              variant: "destructive",
+            });
           },
-        }
+        },
       );
       return;
     }
@@ -180,7 +225,8 @@ export function SubmitPostDialog({ mode, open, onOpenChange }: Props) {
   }
 
   const isSubmitting = createPost.isPending || uploadImage.isPending || createEvent.isPending;
-  const inputClass = "w-full px-3 py-2.5 rounded-xl bg-card border border-input text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all text-sm";
+  const inputClass =
+    "w-full px-3 py-2.5 rounded-xl bg-card border border-input text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all text-sm";
 
   const isShareMode = mode === "share";
 
@@ -198,7 +244,8 @@ export function SubmitPostDialog({ mode, open, onOpenChange }: Props) {
               <p>
                 Ask your coordinator a question, share a prayer request, or get support.{" "}
                 <span className="font-medium text-foreground/70">
-                  Note: these messages are only shared privately with USA Homestays and Hospitality Center staff.
+                  Note: these messages are only shared privately with USA Homestays and Hospitality
+                  Center staff.
                 </span>
               </p>
             )}
@@ -219,13 +266,14 @@ export function SubmitPostDialog({ mode, open, onOpenChange }: Props) {
                   data-testid={`button-type-${type.id}`}
                   onClick={() => handleSelectType(type.id as PostTypeId)}
                   className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all text-center text-xs font-semibold
-                    ${isSelected
-                      ? isEvent
-                        ? "border-red-500 bg-red-50 text-red-600"
-                        : isShareMode
-                          ? "border-primary bg-primary/5 text-primary"
-                          : "border-accent bg-accent/5 text-accent"
-                      : "border-border/50 bg-card text-muted-foreground hover:border-primary/30"
+                    ${
+                      isSelected
+                        ? isEvent
+                          ? "border-red-500 bg-red-50 text-red-600"
+                          : isShareMode
+                            ? "border-primary bg-primary/5 text-primary"
+                            : "border-accent bg-accent/5 text-accent"
+                        : "border-border/50 bg-card text-muted-foreground hover:border-primary/30"
                     }`}
                 >
                   <Icon className={`w-5 h-5 ${isSelected ? "stroke-[2.5]" : ""}`} />
@@ -245,47 +293,100 @@ export function SubmitPostDialog({ mode, open, onOpenChange }: Props) {
               <div className="flex items-start gap-2.5 bg-amber-50 border border-amber-200 rounded-xl p-3">
                 <Info className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                 <p className="text-xs text-amber-700 leading-relaxed">
-                  Only post hang-outs open and appropriate for <strong>any host family and international student</strong> to attend together.
+                  Only post hang-outs open and appropriate for{" "}
+                  <strong>any host family and international student</strong> to attend together.
                 </p>
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-sm font-semibold text-foreground">Hang-out Title <span className="text-destructive">*</span></label>
-                <input data-testid="input-event-title" name="title" value={eventForm.title} onChange={handleEventChange} required className={inputClass} placeholder="e.g. Fall Harvest Picnic in the Park" />
+                <label className="text-sm font-semibold text-foreground">
+                  Hang-out Title <span className="text-destructive">*</span>
+                </label>
+                <input
+                  data-testid="input-event-title"
+                  name="title"
+                  value={eventForm.title}
+                  onChange={handleEventChange}
+                  required
+                  className={inputClass}
+                  placeholder="e.g. Fall Harvest Picnic in the Park"
+                />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <label className="text-sm font-semibold text-foreground flex items-center gap-1">
-                    <CalendarDays className="w-3.5 h-3.5 text-muted-foreground" /> Date <span className="text-destructive">*</span>
+                    <CalendarDays className="w-3.5 h-3.5 text-muted-foreground" /> Date{" "}
+                    <span className="text-destructive">*</span>
                   </label>
-                  <input data-testid="input-event-date" name="eventDate" type="date" value={eventForm.eventDate} onChange={handleEventChange} required className={inputClass} />
+                  <input
+                    data-testid="input-event-date"
+                    name="eventDate"
+                    type="date"
+                    value={eventForm.eventDate}
+                    onChange={handleEventChange}
+                    required
+                    className={inputClass}
+                  />
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-sm font-semibold text-foreground flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5 text-muted-foreground" /> Time <span className="text-destructive">*</span>
+                    <Clock className="w-3.5 h-3.5 text-muted-foreground" /> Time{" "}
+                    <span className="text-destructive">*</span>
                   </label>
-                  <input data-testid="input-event-time" name="eventTime" type="time" value={eventForm.eventTime} onChange={handleEventChange} required className={inputClass} />
+                  <input
+                    data-testid="input-event-time"
+                    name="eventTime"
+                    type="time"
+                    value={eventForm.eventTime}
+                    onChange={handleEventChange}
+                    required
+                    className={inputClass}
+                  />
                 </div>
               </div>
 
               <div className="space-y-1.5">
                 <label className="text-sm font-semibold text-foreground flex items-center gap-1">
-                  <MapPin className="w-3.5 h-3.5 text-muted-foreground" /> Location <span className="text-destructive">*</span>
+                  <MapPin className="w-3.5 h-3.5 text-muted-foreground" /> Location{" "}
+                  <span className="text-destructive">*</span>
                 </label>
-                <input data-testid="input-event-location" name="location" value={eventForm.location} onChange={handleEventChange} required className={inputClass} placeholder="e.g. Riverside Park, Main Pavilion" />
+                <input
+                  data-testid="input-event-location"
+                  name="location"
+                  value={eventForm.location}
+                  onChange={handleEventChange}
+                  required
+                  className={inputClass}
+                  placeholder="e.g. Riverside Park, Main Pavilion"
+                />
               </div>
 
               <div className="space-y-1.5">
                 <label className="text-sm font-semibold text-foreground flex items-center gap-1">
                   <DollarSign className="w-3.5 h-3.5 text-muted-foreground" /> Estimated Cost
                 </label>
-                <input data-testid="input-event-cost" name="estimatedCost" value={eventForm.estimatedCost} onChange={handleEventChange} className={inputClass} placeholder="e.g. Free, $5 per person, $10–15 per family" />
+                <input
+                  data-testid="input-event-cost"
+                  name="estimatedCost"
+                  value={eventForm.estimatedCost}
+                  onChange={handleEventChange}
+                  className={inputClass}
+                  placeholder="e.g. Free, $5 per person, $10–15 per family"
+                />
               </div>
 
               <div className="space-y-1.5">
                 <label className="text-sm font-semibold text-foreground">Description</label>
-                <textarea data-testid="input-event-description" name="description" value={eventForm.description} onChange={handleEventChange} rows={3} className={`${inputClass} resize-none`} placeholder="Share any additional details, what to bring, parking info, etc." />
+                <textarea
+                  data-testid="input-event-description"
+                  name="description"
+                  value={eventForm.description}
+                  onChange={handleEventChange}
+                  rows={3}
+                  className={`${inputClass} resize-none`}
+                  placeholder="Share any additional details, what to bring, parking info, etc."
+                />
               </div>
             </motion.div>
           )}
@@ -309,41 +410,82 @@ export function SubmitPostDialog({ mode, open, onOpenChange }: Props) {
 
           {/* Optional image input */}
           {selectedType === "story" && (
-            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="space-y-3">
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              className="space-y-3"
+            >
               <label className="text-sm font-semibold text-foreground flex items-center gap-1.5">
-                Add a photo <span className="text-xs font-normal text-muted-foreground">(optional)</span>
+                Add a photo{" "}
+                <span className="text-xs font-normal text-muted-foreground">(optional)</span>
               </label>
               <div className="flex gap-2">
-                <button type="button" data-testid="button-image-url" onClick={() => { setImageMode("url"); clearImage(); }}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${imageMode === "url" ? "border-primary bg-primary/5 text-primary" : "border-border text-muted-foreground"}`}>
+                <button
+                  type="button"
+                  data-testid="button-image-url"
+                  onClick={() => {
+                    setImageMode("url");
+                    clearImage();
+                  }}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${imageMode === "url" ? "border-primary bg-primary/5 text-primary" : "border-border text-muted-foreground"}`}
+                >
                   <LinkIcon className="w-3.5 h-3.5" /> Image URL
                 </button>
-                <button type="button" data-testid="button-image-file" onClick={() => { setImageMode("file"); clearImage(); }}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${imageMode === "file" ? "border-primary bg-primary/5 text-primary" : "border-border text-muted-foreground"}`}>
+                <button
+                  type="button"
+                  data-testid="button-image-file"
+                  onClick={() => {
+                    setImageMode("file");
+                    clearImage();
+                  }}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${imageMode === "file" ? "border-primary bg-primary/5 text-primary" : "border-border text-muted-foreground"}`}
+                >
                   <Upload className="w-3.5 h-3.5" /> Upload File
                 </button>
               </div>
 
               {imageMode === "url" ? (
-                <input data-testid="input-image-url" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} className={inputClass} placeholder="https://example.com/image.jpg" />
+                <input
+                  data-testid="input-image-url"
+                  value={imageUrl}
+                  onChange={(e) => setImageUrl(e.target.value)}
+                  className={inputClass}
+                  placeholder="https://example.com/image.jpg"
+                />
               ) : (
                 <div>
                   {imagePreview ? (
                     <div className="relative rounded-xl overflow-hidden border border-border">
                       <img src={imagePreview} alt="Preview" className="w-full h-40 object-cover" />
-                      <button type="button" onClick={clearImage} className="absolute top-2 right-2 p-1.5 rounded-full bg-black/60 text-white" data-testid="button-clear-image">
+                      <button
+                        type="button"
+                        onClick={clearImage}
+                        className="absolute top-2 right-2 p-1.5 rounded-full bg-black/60 text-white"
+                        data-testid="button-clear-image"
+                      >
                         <X className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   ) : (
-                    <button type="button" data-testid="button-choose-file" onClick={() => fileInputRef.current?.click()}
-                      className="w-full h-32 border-2 border-dashed border-border rounded-xl flex flex-col items-center justify-center gap-2 text-muted-foreground hover:border-primary/40 hover:text-primary transition-colors">
+                    <button
+                      type="button"
+                      data-testid="button-choose-file"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="w-full h-32 border-2 border-dashed border-border rounded-xl flex flex-col items-center justify-center gap-2 text-muted-foreground hover:border-primary/40 hover:text-primary transition-colors"
+                    >
                       <Upload className="w-6 h-6" />
                       <span className="text-sm font-medium">Click to choose an image</span>
                       <span className="text-xs">JPG, PNG, WEBP up to 8MB</span>
                     </button>
                   )}
-                  <input ref={fileInputRef} type="file" accept="image/*" className="hidden" data-testid="input-image-file" onChange={handleFileChange} />
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    data-testid="input-image-file"
+                    onChange={handleFileChange}
+                  />
                 </div>
               )}
             </motion.div>
@@ -352,9 +494,7 @@ export function SubmitPostDialog({ mode, open, onOpenChange }: Props) {
           {/* Content textarea */}
           {selectedType !== "event" && (
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-foreground">
-                Message
-              </label>
+              <label className="text-sm font-semibold text-foreground">Message</label>
               <textarea
                 data-testid="input-content"
                 value={content}
@@ -363,9 +503,11 @@ export function SubmitPostDialog({ mode, open, onOpenChange }: Props) {
                 rows={4}
                 className={`${inputClass} resize-none`}
                 placeholder={
-                  selectedType === "prayer"   ? "Share your prayer request with the coordinator..."
-                  : selectedType === "question" ? "What would you like to ask or what can we help you with?"
-                  : "Share a story, caption, or anything on your heart..."
+                  selectedType === "prayer"
+                    ? "Share your prayer request with the coordinator..."
+                    : selectedType === "question"
+                      ? "What would you like to ask or what can we help you with?"
+                      : "Share a story, caption, or anything on your heart..."
                 }
               />
             </div>
@@ -375,16 +517,26 @@ export function SubmitPostDialog({ mode, open, onOpenChange }: Props) {
           <div className="flex items-center justify-between pt-2 border-t border-border">
             <div className="text-xs font-medium">
               {selectedType === "event" ? (
-                <span className="text-red-600 bg-red-50 border border-red-100 px-2.5 py-1 rounded-md">Public hang-out</span>
+                <span className="text-red-600 bg-red-50 border border-red-100 px-2.5 py-1 rounded-md">
+                  Public hang-out
+                </span>
               ) : currentType.public ? (
-                <span className="text-primary bg-primary/10 px-2.5 py-1 rounded-md">Public post</span>
+                <span className="text-primary bg-primary/10 px-2.5 py-1 rounded-md">
+                  Public post
+                </span>
               ) : (
-                <span className="text-muted-foreground bg-muted px-2.5 py-1 rounded-md">Private to coordinator</span>
+                <span className="text-muted-foreground bg-muted px-2.5 py-1 rounded-md">
+                  Private to coordinator
+                </span>
               )}
             </div>
             <div className="flex gap-2">
-              <button type="button" onClick={handleClose} disabled={isSubmitting}
-                className="px-4 py-2 rounded-lg font-semibold text-sm text-muted-foreground hover:bg-muted transition-colors">
+              <button
+                type="button"
+                onClick={handleClose}
+                disabled={isSubmitting}
+                className="px-4 py-2 rounded-lg font-semibold text-sm text-muted-foreground hover:bg-muted transition-colors"
+              >
                 Cancel
               </button>
               <button
@@ -401,8 +553,12 @@ export function SubmitPostDialog({ mode, open, onOpenChange }: Props) {
               >
                 {isSubmitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                 {isSubmitting
-                  ? selectedType === "event" ? "Planning..." : "Submitting..."
-                  : selectedType === "event" ? "Plan Hang-out" : "Submit"}
+                  ? selectedType === "event"
+                    ? "Planning..."
+                    : "Submitting..."
+                  : selectedType === "event"
+                    ? "Plan Hang-out"
+                    : "Submit"}
               </button>
             </div>
           </div>

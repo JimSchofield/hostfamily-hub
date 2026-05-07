@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Montserrat:wght@700;800;900&family=Outfit:wght@300;400;500;600;700;800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Abril+Fatface&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Montserrat:wght@700;800;900&family=Outfit:wght@300;400;500;600;700;800&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -6,55 +6,60 @@
 
 @layer base {
   :root {
-    --font-sans: 'DM Sans', sans-serif;
-    --font-display: 'Outfit', sans-serif;
+    --font-sans: "DM Sans", sans-serif;
+    --font-display: "Outfit", sans-serif;
 
     /* BLUE & RED PATRIOTIC THEME */
-    --background: 216 33% 97%;      /* Very light cool blue-white */
-    --foreground: 218 47% 11%;      /* Deep navy */
-    
-    --card: 0 0% 100%;              /* Pure white */
+    --background: 216 33% 97%; /* Very light cool blue-white */
+    --foreground: 218 47% 11%; /* Deep navy */
+
+    --card: 0 0% 100%; /* Pure white */
     --card-foreground: 218 47% 11%;
-    
+
     --popover: 0 0% 100%;
     --popover-foreground: 218 47% 11%;
-    
+
     /* USA Homestays Blue */
     --primary: 218 68% 40%;
     --primary-foreground: 0 0% 100%;
-    
+
     /* Light Blue */
     --secondary: 216 50% 92%;
     --secondary-foreground: 218 40% 20%;
-    
+
     --muted: 216 30% 93%;
     --muted-foreground: 216 18% 46%;
-    
+
     /* Red Accent (HC / USA Homestays red) */
     --accent: 0 78% 52%;
     --accent-foreground: 0 0% 100%;
-    
+
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 216 22% 87%;
     --input: 216 22% 87%;
     --ring: 218 68% 40%;
-    
+
     --radius: 1rem;
-    
-    --shadow-soft: 0 10px 40px -10px rgba(0,0,0,0.04), 0 4px 10px -5px rgba(0,0,0,0.02);
-    --shadow-hover: 0 20px 40px -10px rgba(0,0,0,0.07), 0 8px 16px -8px rgba(0,0,0,0.04);
+
+    --shadow-soft: 0 10px 40px -10px rgba(0, 0, 0, 0.04), 0 4px 10px -5px rgba(0, 0, 0, 0.02);
+    --shadow-hover: 0 20px 40px -10px rgba(0, 0, 0, 0.07), 0 8px 16px -8px rgba(0, 0, 0, 0.04);
   }
 
   body {
     @apply bg-background text-foreground antialiased selection:bg-primary/20 selection:text-primary;
     font-family: var(--font-sans);
-    background-image: radial-gradient(hsl(var(--primary)/0.06) 1px, transparent 1px);
+    background-image: radial-gradient(hsl(var(--primary) / 0.06) 1px, transparent 1px);
     background-size: 32px 32px;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-display);
     @apply font-bold tracking-tight text-foreground;
   }
@@ -64,7 +69,7 @@
   .hover-elevate {
     @apply transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[var(--shadow-hover)];
   }
-  
+
   .glass-card {
     @apply bg-white/80 backdrop-blur-xl border border-white/50 shadow-[var(--shadow-soft)];
   }

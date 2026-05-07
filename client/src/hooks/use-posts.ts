@@ -1,7 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, type PostResponse, type PostInput, type ReplyResponse } from "@shared/routes";
 import type { Reply, PostWithLikes, Post } from "@shared/schema";
-import { z } from "zod";
 
 async function apiFetch(url: string, options?: RequestInit) {
   const res = await fetch(url, { credentials: "include", ...options });

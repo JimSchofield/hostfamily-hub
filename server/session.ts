@@ -73,7 +73,11 @@ export async function requireCoordinator(c: Context): Promise<SessionUser> {
 }
 
 export class HttpError extends Error {
-  constructor(public status: number, message: string, public field?: string) {
+  constructor(
+    public status: number,
+    message: string,
+    public field?: string,
+  ) {
     super(message);
   }
 }

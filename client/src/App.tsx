@@ -10,7 +10,13 @@ import AuthPage from "@/pages/auth";
 import { useAuth } from "@/hooks/use-auth";
 import { Loader2 } from "lucide-react";
 
-function AuthGuard({ children, requireCoordinator = false }: { children: React.ReactNode; requireCoordinator?: boolean }) {
+function AuthGuard({
+  children,
+  requireCoordinator = false,
+}: {
+  children: React.ReactNode;
+  requireCoordinator?: boolean;
+}) {
   const { data: user, isLoading } = useAuth();
   const [, setLocation] = useLocation();
 
@@ -37,7 +43,9 @@ function AuthGuard({ children, requireCoordinator = false }: { children: React.R
           <p className="text-muted-foreground text-sm leading-relaxed mb-6">
             Your account is awaiting coordinator approval. You'll receive access once approved.
           </p>
-          <p className="text-xs text-muted-foreground">Signed in as <span className="font-semibold text-foreground">{user.email}</span></p>
+          <p className="text-xs text-muted-foreground">
+            Signed in as <span className="font-semibold text-foreground">{user.email}</span>
+          </p>
           <button
             onClick={() => {
               fetch("/api/auth/logout", { method: "POST", credentials: "include" }).then(() => {
@@ -72,7 +80,9 @@ function AuthGuard({ children, requireCoordinator = false }: { children: React.R
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
         <div className="bg-card rounded-2xl border border-border p-8 max-w-sm w-full text-center shadow-sm">
           <h2 className="text-xl font-bold text-foreground mb-2">Access Restricted</h2>
-          <p className="text-muted-foreground text-sm">This page is only accessible to coordinators.</p>
+          <p className="text-muted-foreground text-sm">
+            This page is only accessible to coordinators.
+          </p>
         </div>
       </div>
     );
@@ -84,8 +94,22 @@ function AuthGuard({ children, requireCoordinator = false }: { children: React.R
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={() => <AuthGuard><FeedPage /></AuthGuard>} />
-      <Route path="/dashboard" component={() => <AuthGuard requireCoordinator><DashboardPage /></AuthGuard>} />
+      <Route
+        path="/"
+        component={() => (
+          <AuthGuard>
+            <FeedPage />
+          </AuthGuard>
+        )}
+      />
+      <Route
+        path="/dashboard"
+        component={() => (
+          <AuthGuard requireCoordinator>
+            <DashboardPage />
+          </AuthGuard>
+        )}
+      />
       <Route component={NotFound} />
     </Switch>
   );

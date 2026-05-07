@@ -12,11 +12,16 @@ function getInitial(name: string): string {
 }
 
 const TYPE_CONFIG = {
-  story:    { icon: BookOpen,       label: "Story",          color: "text-primary",   bg: "bg-primary/10" },
-  picture:  { icon: Camera,         label: "Picture",        color: "text-cyan-600",   bg: "bg-cyan-500/10" },
-  prayer:   { icon: Heart,          label: "Prayer Request", color: "text-rose-500",  bg: "bg-rose-500/10" },
-  question: { icon: MessageCircle,  label: "Question",       color: "text-blue-500",  bg: "bg-blue-500/10" },
-  help:     { icon: HelpCircle,     label: "Needs Help",     color: "text-amber-500", bg: "bg-amber-500/10" },
+  story: { icon: BookOpen, label: "Story", color: "text-primary", bg: "bg-primary/10" },
+  picture: { icon: Camera, label: "Picture", color: "text-cyan-600", bg: "bg-cyan-500/10" },
+  prayer: { icon: Heart, label: "Prayer Request", color: "text-rose-500", bg: "bg-rose-500/10" },
+  question: {
+    icon: MessageCircle,
+    label: "Question",
+    color: "text-blue-500",
+    bg: "bg-blue-500/10",
+  },
+  help: { icon: HelpCircle, label: "Needs Help", color: "text-amber-500", bg: "bg-amber-500/10" },
 } as const;
 
 function ReplySection({ postId }: { postId: number }) {
@@ -30,14 +35,17 @@ function ReplySection({ postId }: { postId: number }) {
     if (!replyText.trim()) return;
     createReply.mutate(replyText.trim(), {
       onSuccess: () => setReplyText(""),
-      onError: (err) => toast({ title: "Failed to send reply", description: err.message, variant: "destructive" }),
+      onError: (err) =>
+        toast({ title: "Failed to send reply", description: err.message, variant: "destructive" }),
     });
   }
 
   return (
     <div className="mt-4 pt-4 border-t border-border/50 space-y-3">
       {isLoading ? (
-        <div className="text-xs text-muted-foreground flex items-center gap-1"><Loader2 className="w-3 h-3 animate-spin" /> Loading replies...</div>
+        <div className="text-xs text-muted-foreground flex items-center gap-1">
+          <Loader2 className="w-3 h-3 animate-spin" /> Loading replies...
+        </div>
       ) : replies && replies.length > 0 ? (
         <div className="space-y-2">
           {replies.map((reply) => (
@@ -73,7 +81,11 @@ function ReplySection({ postId }: { postId: number }) {
           disabled={createReply.isPending || !replyText.trim()}
           className="p-2 bg-primary text-primary-foreground rounded-lg disabled:opacity-40 flex items-center justify-center transition-opacity"
         >
-          {createReply.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+          {createReply.isPending ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <Send className="w-4 h-4" />
+          )}
         </button>
       </form>
     </div>
@@ -112,7 +124,9 @@ function LikeButton({ post }: { post: PostWithLikes }) {
           : "text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10"
       }`}
     >
-      <Heart className={`w-3.5 h-3.5 transition-transform ${liked ? "fill-rose-500 scale-110" : ""}`} />
+      <Heart
+        className={`w-3.5 h-3.5 transition-transform ${liked ? "fill-rose-500 scale-110" : ""}`}
+      />
       <span data-testid={`text-like-count-${post.id}`}>{count > 0 ? count : ""}</span>
     </button>
   );
@@ -153,7 +167,9 @@ export function PostCard({
       <div className="p-5 flex-1 flex flex-col">
         <div className="flex items-center justify-between mb-3 gap-2">
           {post.type !== "story" && post.type !== "picture" && (
-            <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${config.bg} ${config.color}`}>
+            <div
+              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${config.bg} ${config.color}`}
+            >
               <Icon className="w-3.5 h-3.5" />
               {config.label}
             </div>
@@ -178,7 +194,12 @@ export function PostCard({
               {getInitial(post.authorName)}
             </div>
             <div>
-              <p className="text-xs font-bold text-foreground leading-none" data-testid={`text-author-${post.id}`}>{post.authorName}</p>
+              <p
+                className="text-xs font-bold text-foreground leading-none"
+                data-testid={`text-author-${post.id}`}
+              >
+                {post.authorName}
+              </p>
               <p className="text-[11px] text-muted-foreground mt-0.5">
                 {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
               </p>

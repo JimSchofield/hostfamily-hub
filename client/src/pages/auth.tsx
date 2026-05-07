@@ -49,16 +49,22 @@ export default function AuthPage() {
       login.mutate(
         { email: form.email, password: form.password },
         {
-          onError: (err) => toast({ title: "Login failed", description: err.message, variant: "destructive" }),
-        }
+          onError: (err) =>
+            toast({ title: "Login failed", description: err.message, variant: "destructive" }),
+        },
       );
     } else {
       register.mutate(
         { name: form.name, email: form.email, password: form.password },
         {
           onSuccess: () => setRegistered(true),
-          onError: (err) => toast({ title: "Registration failed", description: err.message, variant: "destructive" }),
-        }
+          onError: (err) =>
+            toast({
+              title: "Registration failed",
+              description: err.message,
+              variant: "destructive",
+            }),
+        },
       );
     }
   }
@@ -76,10 +82,14 @@ export default function AuthPage() {
           </div>
           <h2 className="text-2xl font-bold text-foreground mb-3">Registration submitted!</h2>
           <p className="text-muted-foreground mb-6 leading-relaxed">
-            Your registration is pending coordinator approval. You will be able to log in once your account has been approved.
+            Your registration is pending coordinator approval. You will be able to log in once your
+            account has been approved.
           </p>
           <button
-            onClick={() => { setRegistered(false); setMode("login"); }}
+            onClick={() => {
+              setRegistered(false);
+              setMode("login");
+            }}
             className="text-primary font-semibold hover:underline text-sm"
           >
             Back to login
@@ -104,8 +114,14 @@ export default function AuthPage() {
             <img src={usahLogo} alt="USA Homestays" className="h-9 w-auto object-contain" />
           </div>
           <div className="flex flex-col items-center gap-3">
-            <div className="inline-flex items-center px-6 pb-3 pt-6 rounded-full bg-primary/10 text-primary text-3xl font-black tracking-wide" style={{ fontFamily: "'Montserrat', sans-serif" }}>
-              <HouseH />ost Family&nbsp;<HouseH />ub
+            <div
+              className="inline-flex items-center px-6 pb-3 pt-6 rounded-full bg-primary/10 text-primary text-3xl font-black tracking-wide"
+              style={{ fontFamily: "'Montserrat', sans-serif" }}
+            >
+              <HouseH />
+              ost Family&nbsp;
+              <HouseH />
+              ub
             </div>
             <p className="text-muted-foreground text-sm text-center">
               A community for host families supporting international students
@@ -150,7 +166,9 @@ export default function AuthPage() {
                   exit={{ opacity: 0, height: 0 }}
                   className="space-y-2"
                 >
-                  <label className="text-sm font-semibold text-foreground">Your Name / Family Name</label>
+                  <label className="text-sm font-semibold text-foreground">
+                    Your Name / Family Name
+                  </label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <input
@@ -197,14 +215,17 @@ export default function AuthPage() {
                   required
                   minLength={mode === "register" ? 6 : 1}
                   className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-background border border-input text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
-                  placeholder={mode === "register" ? "At least 6 characters" : "Enter your password"}
+                  placeholder={
+                    mode === "register" ? "At least 6 characters" : "Enter your password"
+                  }
                 />
               </div>
             </div>
 
             {mode === "register" && (
               <p className="text-xs text-muted-foreground bg-muted/50 rounded-lg p-3">
-                After registering, your account will need to be approved by the coordinator before you can access the community.
+                After registering, your account will need to be approved by the coordinator before
+                you can access the community.
               </p>
             )}
 
@@ -214,7 +235,9 @@ export default function AuthPage() {
               disabled={login.isPending || register.isPending}
               className="w-full py-3 bg-primary text-primary-foreground rounded-xl font-bold shadow-lg shadow-primary/20 disabled:opacity-50 flex items-center justify-center gap-2 transition-opacity mt-2"
             >
-              {(login.isPending || register.isPending) && <Loader2 className="w-4 h-4 animate-spin" />}
+              {(login.isPending || register.isPending) && (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              )}
               {mode === "login" ? "Sign In" : "Request Access"}
             </button>
           </form>

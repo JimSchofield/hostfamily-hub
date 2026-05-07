@@ -1,8 +1,17 @@
 import { db } from "./db";
 import { users, posts, replies, likes, events, eventAttendees } from "@shared/schema";
 import type {
-  InsertUser, User, InsertPost, Post, InsertReply, Reply, SafeUser,
-  PostWithLikes, Event, InsertEvent, EventAttendee, EventWithAttendees,
+  InsertUser,
+  User,
+  InsertPost,
+  Post,
+  InsertReply,
+  Reply,
+  SafeUser,
+  PostWithLikes,
+  Event,
+  InsertEvent,
+  EventWithAttendees,
 } from "@shared/schema";
 import { eq, and, inArray, sql } from "drizzle-orm";
 
@@ -26,11 +35,15 @@ export interface IStorage {
 
   getEvents(userId?: number): Promise<EventWithAttendees[]>;
   createEvent(event: InsertEvent): Promise<Event>;
-  toggleAttendance(eventId: number, userId: number, attendeeName: string): Promise<{ attending: boolean; count: number }>;
+  toggleAttendance(
+    eventId: number,
+    userId: number,
+    attendeeName: string,
+  ): Promise<{ attending: boolean; count: number }>;
 }
 
 function toSafeUser(user: User): SafeUser {
-  const { password, ...safe } = user;
+  const { password: _password, ...safe } = user;
   return safe;
 }
 
@@ -46,13 +59,16 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createUser(insertUser: InsertUser & { role?: string; status?: string }): Promise<User> {
-    const [user] = await db.insert(users).values({
-      name: insertUser.name,
-      email: insertUser.email.toLowerCase(),
-      password: insertUser.password,
-      role: insertUser.role ?? "volunteer",
-      status: insertUser.status ?? "pending",
-    }).returning();
+    const [user] = await db
+      .insert(users)
+      .values({
+        name: insertUser.name,
+        email: insertUser.email.toLowerCase(),
+        password: insertUser.password,
+        role: insertUser.role ?? "volunteer",
+        status: insertUser.status ?? "pending",
+      })
+      .returning();
     return user;
   }
 
@@ -169,7 +185,11 @@ export class DatabaseStorage implements IStorage {
     return event;
   }
 
-  async toggleAttendance(eventId: number, userId: number, attendeeName: string): Promise<{ attending: boolean; count: number }> {
+  async toggleAttendance(
+    eventId: number,
+    userId: number,
+    attendeeName: string,
+  ): Promise<{ attending: boolean; count: number }> {
     const [existing] = await db
       .select()
       .from(eventAttendees)

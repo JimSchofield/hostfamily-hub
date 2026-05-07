@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { CalendarDays, Clock, MapPin, DollarSign, Loader2, Info } from "lucide-react";
 import { useCreateEvent } from "@/hooks/use-events";
 import { useToast } from "@/hooks/use-toast";
@@ -22,7 +28,13 @@ const EMPTY: EventForm = {
   estimatedCost: "",
 };
 
-export function CreateEventDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
+export function CreateEventDialog({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+}) {
   const [form, setForm] = useState<EventForm>(EMPTY);
   const createEvent = useCreateEvent();
   const { toast } = useToast();
@@ -46,13 +58,20 @@ export function CreateEventDialog({ open, onOpenChange }: { open: boolean; onOpe
       { ...form, estimatedCost: form.estimatedCost || "Free" },
       {
         onSuccess: () => {
-          toast({ title: "Event created!", description: "Your event is now visible to all host families." });
+          toast({
+            title: "Event created!",
+            description: "Your event is now visible to all host families.",
+          });
           handleClose();
         },
         onError: (err) => {
-          toast({ title: "Failed to create event", description: err.message, variant: "destructive" });
+          toast({
+            title: "Failed to create event",
+            description: err.message,
+            variant: "destructive",
+          });
         },
-      }
+      },
     );
   }
 
@@ -76,14 +95,18 @@ export function CreateEventDialog({ open, onOpenChange }: { open: boolean; onOpe
         <div className="mx-6 mt-4 flex items-start gap-2.5 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/40 rounded-xl p-3">
           <Info className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
           <p className="text-xs text-amber-700 dark:text-amber-400 leading-relaxed">
-            Please only post events that are open and appropriate for <strong>any host family and international student</strong> to attend together — regardless of age, background, or culture.
+            Please only post events that are open and appropriate for{" "}
+            <strong>any host family and international student</strong> to attend together —
+            regardless of age, background, or culture.
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 pt-4 flex flex-col gap-4">
           {/* Title */}
           <div className="space-y-1.5">
-            <label className="text-sm font-semibold text-foreground">Event Title <span className="text-destructive">*</span></label>
+            <label className="text-sm font-semibold text-foreground">
+              Event Title <span className="text-destructive">*</span>
+            </label>
             <input
               data-testid="input-event-title"
               name="title"
@@ -99,7 +122,8 @@ export function CreateEventDialog({ open, onOpenChange }: { open: boolean; onOpe
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <label className="text-sm font-semibold text-foreground flex items-center gap-1">
-                <CalendarDays className="w-3.5 h-3.5 text-muted-foreground" /> Date <span className="text-destructive">*</span>
+                <CalendarDays className="w-3.5 h-3.5 text-muted-foreground" /> Date{" "}
+                <span className="text-destructive">*</span>
               </label>
               <input
                 data-testid="input-event-date"
@@ -113,7 +137,8 @@ export function CreateEventDialog({ open, onOpenChange }: { open: boolean; onOpe
             </div>
             <div className="space-y-1.5">
               <label className="text-sm font-semibold text-foreground flex items-center gap-1">
-                <Clock className="w-3.5 h-3.5 text-muted-foreground" /> Time <span className="text-destructive">*</span>
+                <Clock className="w-3.5 h-3.5 text-muted-foreground" /> Time{" "}
+                <span className="text-destructive">*</span>
               </label>
               <input
                 data-testid="input-event-time"
@@ -130,7 +155,8 @@ export function CreateEventDialog({ open, onOpenChange }: { open: boolean; onOpe
           {/* Location */}
           <div className="space-y-1.5">
             <label className="text-sm font-semibold text-foreground flex items-center gap-1">
-              <MapPin className="w-3.5 h-3.5 text-muted-foreground" /> Location <span className="text-destructive">*</span>
+              <MapPin className="w-3.5 h-3.5 text-muted-foreground" /> Location{" "}
+              <span className="text-destructive">*</span>
             </label>
             <input
               data-testid="input-event-location"

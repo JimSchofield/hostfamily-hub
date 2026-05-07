@@ -28,7 +28,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen flex flex-col relative">
       <header className="sticky top-0 z-40 w-full bg-background/95 backdrop-blur border-b border-border">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
-
           {/* Dual branding logos */}
           <Link href="/" className="flex items-center gap-3 shrink-0" data-testid="link-home">
             <img src={hcLogo} alt="The Hospitality Center" className="h-8 w-auto object-contain" />
@@ -70,7 +69,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm shrink-0">
                   {getInitial(user.name)}
                 </div>
-                <span className="text-sm font-medium text-foreground hidden md:block max-w-[100px] truncate" data-testid="text-username">
+                <span
+                  className="text-sm font-medium text-foreground hidden md:block max-w-[100px] truncate"
+                  data-testid="text-username"
+                >
                   {user.name}
                 </span>
                 <button
@@ -87,9 +89,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         </div>
       </header>
 
-      <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-12">
-        {children}
-      </main>
+      <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-12">{children}</main>
     </div>
   );
 }

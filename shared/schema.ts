@@ -65,7 +65,12 @@ export const sessions = pgTable("sessions", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const insertUserSchema = createInsertSchema(users).omit({ id: true, createdAt: true, role: true, status: true });
+export const insertUserSchema = createInsertSchema(users).omit({
+  id: true,
+  createdAt: true,
+  role: true,
+  status: true,
+});
 export const insertPostSchema = createInsertSchema(posts).omit({ id: true, createdAt: true });
 export const insertReplySchema = createInsertSchema(replies).omit({ id: true, createdAt: true });
 export const insertEventSchema = createInsertSchema(events).omit({ id: true, createdAt: true });
@@ -81,7 +86,11 @@ export type PostWithLikes = Post & { likeCount: number; likedByMe: boolean };
 export type Event = typeof events.$inferSelect;
 export type InsertEvent = z.infer<typeof insertEventSchema>;
 export type EventAttendee = typeof eventAttendees.$inferSelect;
-export type EventWithAttendees = Event & { attendeeCount: number; isAttending: boolean; attendees: string[] };
+export type EventWithAttendees = Event & {
+  attendeeCount: number;
+  isAttending: boolean;
+  attendees: string[];
+};
 
 export type Session = typeof sessions.$inferSelect;
 
