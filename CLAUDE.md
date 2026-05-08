@@ -25,11 +25,23 @@ There is no test runner.
 - Prettier ignores `*.md` so docs aren't rewrapped.
 - `eslint-plugin-react-hooks` is pinned to v5 because v7 pulls in Zod v4, which conflicts with this project's Zod v3 pin (see Drizzle note below).
 
+### Lean UI — only what's used
+
+`client/src/components/ui/` deliberately contains only the five shadcn components actually imported by app code: `card`, `dialog`, `toast`, `toaster`, `tooltip`. The original Replit setup shipped 47 of them with all their Radix and ancillary deps (recharts, react-day-picker, embla-carousel, etc.). They were removed because they were dead weight.
+
+If you need another shadcn component later, add it back via the CLI rather than copy-pasting:
+
+```
+pnpm dlx shadcn@latest add <component>
+```
+
+This re-creates the component file *and* installs the matching Radix dep automatically.
+
 ## Required env vars
 
-Loaded from `.env` (gitignored). On deployed Netlify, the DB URL is auto-injected by the Netlify DB extension.
+Loaded from `.env` locally (gitignored). On deployed Netlify, set them via `netlify env:set NAME value --context production`.
 
-- `NETLIFY_DATABASE_URL` (or `DATABASE_URL`) — Neon Postgres connection string. Required at boot.
+- `NETLIFY_DATABASE_URL` (or `DATABASE_URL`) — Neon Postgres connection string. Required at boot. Note: the Netlify DB extension does *not* reliably auto-inject this into function envs — set it explicitly on the deployed site.
 - `RESEND_API_KEY` — optional. If unset, email notifications are silently skipped.
 - `SEED_COORDINATOR_PASSWORD` — required only when running `pnpm seed`. The seed script refuses to run without this; there is no hardcoded default.
 - `SEED_COORDINATOR_EMAIL` — optional, defaults to `coordinator@hostfamilyhub.com`.
@@ -64,7 +76,7 @@ Drizzle is pinned to a `drizzle-zod` version that emits Zod v3 schemas (`drizzle
 ### Sessions — DB-backed random IDs
 
 `server/session.ts` owns the session lifecycle:
-- **Login:** `createSession(c, userId)` generates a 32-byte random ID, inserts a row in `sessions` with 7-day expiry, and sets a `HttpOnly; SameSite=Lax` cookie.
+- **Login:** `createSession(c, userId)` generates a 32-byte random ID, inserts a row in `sessions` with 7-day expiry, and sets a `HttpOnly; SameSite=Lax` cookie. The `Secure` flag is gated on `LAMBDA_TASK_ROOT` — set on deployed Netlify (always HTTPS) but not on `netlify dev` (where the browser would silently drop a Secure cookie sent over `http://localhost`).
 - **Each request:** `getSessionUser(c)` reads the cookie, joins `sessions` to `users`, returns the user (or `null` if expired/missing). Role/status are read fresh on every request — coordinator promotions and rejections take effect immediately.
 - **Logout:** deletes the row + clears the cookie.
 - **Revocation:** `destroyAllUserSessions(userId)` is called when a coordinator changes a user's status away from `approved` (see `PATCH /api/admin/users/:id`).
